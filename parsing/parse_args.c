@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:33:06 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/26 14:37:30 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/06/28 20:03:29 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ int	parse_args(int ac, char **av, t_data *data)
 	data->time_to_eat = ft_atoi(av[3]);
 	data->time_to_sleep = ft_atoi(av[4]);
 	if (ac == 6)
-		data->meals_required = ft_atoi(ac[5]);
+		data->meals_required = ft_atoi(av[5]);
 	else
 		data->meals_required = -1;
 	data->someone_died = 0;
@@ -29,10 +29,11 @@ int	parse_args(int ac, char **av, t_data *data)
 		|| is_valid_time(data->time_to_die)
 		|| is_valid_time(data->time_to_eat)
 		|| is_valid_time(data->time_to_sleep)
-		|| is_valid_meal(ac, data->meals_required))
+		|| is_valid_meals(ac, data->meals_required))
 	{
 		printf("Error: invalid argument values\n");
 		return (1);
 	}
+	return (0);
 }
 

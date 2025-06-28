@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   clean.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:07:59 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/26 16:28:29 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/06/28 20:05:17 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ void cleanup_philos(t_data *data)
 	}
 }
 
-void cleanup_simulation_stage(t_data *data, int stage)
+int cleanup_simulation_stage(t_data *data, int stage)
 {
 	if (stage >= 3)  // Se hai allocato philos, liberali
 		cleanup_philos(data);
@@ -68,4 +68,5 @@ void cleanup_simulation_stage(t_data *data, int stage)
 		cleanup_mutexes(data);
 		return (1);
 	}
+	return (0);
 }

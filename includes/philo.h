@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 13:55:03 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/26 15:50:32 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/06/28 20:54:54 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,9 +54,10 @@ typedef struct s_data
 	pthread_mutex_t	print_lock;			// Protegge l'output sulla console
 	pthread_mutex_t	death_lock;			// Protegge il flag someone_died
 	pthread_mutex_t	meal_lock;			// Protegge l'accesso a last_meal_time
-
+	pthread_mutex_t	status_lock;
 	/* === RIFERIMENTO AI FILOSOFI === */
 	t_philo			*philos;			// Array delle strutture filosofo
+	int				all_ate;
 }	t_data;
 
 
@@ -64,7 +65,7 @@ typedef struct s_philo
 {
 	/* === IDENTIFICAZIONE === */
 	int				id;					// Identificatore univoco filosofo (base 1)
-	
+
 	/* === STATO DEI PASTI === */
 	int				meals_eaten;		// Numero di pasti consumati
 	long			last_meal_time;		// Timestamp dell'ultimo inizio pasto (ms)
@@ -92,18 +93,32 @@ int			init_simulation(t_data *data);
 int			initialize_data(t_data *data);
 int			init_mutexes(t_data *data);
 int			init_single_mutex(pthread_mutex_t *mutex, char *name);
+int			create_threads(t_data *data);
+int			join_threads(t_data *data);
+void		*philo_routine(void *philo_arg);
+void	precise_usleep(long m_seconds_to_wait, t_data *data);
 
 /*parsing*/
 int			is_error(int ac, char **av);
 int			is_valid_time(int value);
 int			is_valid_meals(int ac, int meals);
 int			parse_args(int ac, char **av, t_data *data);
-
-
+int			check_death(t_data *data);
+void		set_death(t_data *data);
+int	handle_single_philo(t_philo *philo);
+void	release_forks(t_philo *philo);
+int	take_forks(t_philo *philo);
+int	take_two_forks(t_philo *philo);
+void	print_philo_status(t_philo *philo, char *msg);
+int	check_all_meals_done(t_data *data);
+void	*monitor(void	*philo);
+int	check_philo_death(t_data *data, int philo_idx);
+int init_forks(t_data *data);
+long	get_time();
 int			cleanup_mutexes(t_data *data);
-void		cleanup_simulation_stage(t_data *data, int stage);
+int		cleanup_simulation_stage(t_data *data, int stage);
 void		cleanup_philos(t_data *data);
-void		cleanup_forks(t_data *data);
+int		cleanup_forks(t_data *data);
 void		cleanup_simulation(t_data *data);
-
+void	update_meal_time(t_philo *philo);
 #endif

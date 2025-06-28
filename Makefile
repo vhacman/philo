@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+         #
+#    By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/26 11:23:24 by vhacman           #+#    #+#              #
-#    Updated: 2025/06/26 16:09:03 by vhacman          ###   ########.fr        #
+#    Updated: 2025/06/28 20:17:17 by vhacman          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -33,8 +33,16 @@ SRC = \
 	initialization/initialization.c \
 	initialization/init_mutexes.c \
 	initialization/init_forks.c \
-	threads/threads_utils.c \
-	
+	threads/thread_utils.c \
+	utils/fork_utils.c \
+	utils/death_utils.c \
+	utils/print_utils.c \
+	utils/time_utils.c \
+	routine/routine.c \
+	routine/routine_utils.c \
+	monitor/monitor.c \
+	monitor/monitor_utils.c \
+
 # OBJ defines the object files built from the source files.
 OBJ		= $(SRC:.c=.o)
 
@@ -67,6 +75,6 @@ fclean: clean
 # Rule to force full rebuild: fclean followed by all.
 re: fclean all
 	@echo "\033[1;34m[rebuild] Memory reset. Reality rebuilt.\033[0m"
-	
+
 # Declare all custom rules that do not create files as .PHONY targets.
-.PHONY: all clean fclean re 
+.PHONY: all clean fclean re

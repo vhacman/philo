@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_forks.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:18:27 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/26 16:05:01 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/06/28 20:26:14 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,10 +27,11 @@ int init_forks(t_data *data)
 	{
 		if (pthread_mutex_init(&data->forks[i], NULL) != 0)
 		{
-			printf("Error: pthread mutex init fork\n", i);
+			printf("Error: pthread mutex init fork\n");
 			cleanup_forks(data);
 			return (1);
 		}
+		i++;
 	}
-	i++;
+	return (0);
 }
