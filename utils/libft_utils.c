@@ -16,12 +16,12 @@
 ** Compares two strings lexicographically
 ** @s1: First string to compare
 ** @s2: Second string to compare
-** 
+**
 ** This function compares two null-terminated strings character by character.
 ** It continues until it finds different characters or reaches the end of
 ** either string. Returns the difference between the first differing
 ** characters as unsigned chars.
-** 
+**
 ** Return: 0 if strings are equal, negative if s1 < s2, positive if s1 > s2
 */
 int	ft_strcmp(const char *s1, const char *s2)
@@ -39,12 +39,12 @@ int	ft_strcmp(const char *s1, const char *s2)
 ** @s1: First string to compare
 ** @s2: Second string to compare
 ** @n: Maximum number of characters to compare
-** 
+**
 ** This function compares up to n characters of two strings.
 ** If n is 0, it returns 0 immediately (no comparison needed).
 ** It stops comparing when it reaches n-1 characters, finds different
 ** characters, or reaches the end of either string.
-** 
+**
 ** Return: 0 if strings are equal within n chars, negative if s1 < s2,
 **         positive if s1 > s2
 */
@@ -65,10 +65,10 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 /*
 ** Checks if a character is a decimal digit
 ** @c: Character to check (passed as int but treated as char)
-** 
+**
 ** This function determines if the given character is a decimal digit.
 ** It performs a simple range check using ASCII values.
-** 
+**
 ** Return: 1 if c is a digit, 0 otherwise
 */
 int	ft_isdigit(int c)
@@ -81,12 +81,12 @@ int	ft_isdigit(int c)
 /*
 ** Converts a string to an integer
 ** @str: String to convert
-** 
+**
 ** This function converts the initial portion of a string to an integer.
 ** It skips leading whitespace characters (space, tab, newline, etc.),
 ** handles an optional sign (+ or -), then converts consecutive digits.
 ** The conversion stops at the first non-digit character.
-** 
+**
 ** Return: The converted integer value
 */
 int	ft_atoi(const char *str)
@@ -117,11 +117,11 @@ int	ft_atoi(const char *str)
 /*
 ** Checks if a string contains only digits
 ** @str: String to validate
-** 
+**
 ** This function verifies that a string contains only decimal digits.
 ** It returns 0 if the string is empty or contains any non-digit characters.
 ** Useful for validating numeric input before conversion.
-** 
+**
 ** Return: 1 if string contains only digits and is not empty, 0 otherwise
 */
 int	is_number(char *str)

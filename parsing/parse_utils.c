@@ -3,15 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   parse_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:33:45 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/26 14:34:56 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/06/30 12:26:11 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+/*
+** Checks for errors in the input arguments
+** @ac: Argument count
+** @av: Argument vector
+**
+** Verifies that the number of arguments is 5 or 6.
+** Then checks that each argument (from av[1] to av[ac - 1]) is numeric
+** using is_number(). If any check fails, prints an error and returns 1.
+**
+** Return: 1 if error found (wrong count or non-numeric values), 0 otherwise
+*/
 int	is_error(int ac, char **av)
 {
 	int	i;
@@ -34,12 +45,31 @@ int	is_error(int ac, char **av)
 	return (0);
 }
 
-int is_valid_time(int value)
+/*
+** Validates time-related input values
+** @value: Integer value to check
+**
+** Used to validate number of philosophers and time parameters.
+** A value is considered invalid if it is less than or equal to 0.
+**
+** Return: 1 if value is invalid, 0 if valid
+*/
+int	is_valid_time(int value)
 {
-    return (value <= 0);
+	return (value <= 0);
 }
 
-int is_valid_meals(int ac, int meals)
+/*
+** Validates the meals_required argument
+** @ac: Argument count
+** @meals: Parsed number of meals required
+**
+** Only called if 6 arguments are provided.
+** Checks that the meals_required value is strictly greater than 0.
+**
+** Return: 1 if invalid (ac == 6 and meals <= 0), 0 if valid
+*/
+int	is_valid_meals(int ac, int meals)
 {
-    return (ac == 6 && meals <= 0);
+	return (ac == 6 && meals <= 0);
 }

@@ -3,16 +3,26 @@
 /*                                                        :::      ::::::::   */
 /*   init_mutexes.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:17:57 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/26 15:36:00 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/06/30 12:28:01 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int init_single_mutex(pthread_mutex_t *mutex, char *name)
+/*
+** Initializes a single mutex
+** @mutex: Pointer to the mutex to initialize
+** @name: Name of the mutex (used for error messages)
+**
+** Calls pthread_mutex_init() on the given mutex.
+** If initialization fails, prints an error with the mutex name.
+**
+** Return: 0 on success, 1 on failure
+*/
+int	init_single_mutex(pthread_mutex_t *mutex, char *name)
 {
 	if (pthread_mutex_init(mutex, NULL) != 0)
 	{
@@ -22,13 +32,27 @@ int init_single_mutex(pthread_mutex_t *mutex, char *name)
 	return (0);
 }
 
-int init_mutexes(t_data *data)
+/*
+** Initializes all shared mutexes in the data structure
+** @data: Pointer to the simulation data structure
+**
+** Initializes the following mutexes:
+** - print_lock: Synchronizes output to avoid overlapping prints
+** - death_lock: Protects the someone_died flag
+** - meal_lock: Protects access to meal-related data
+**
+** If any initialization fails, previously initialized mutexes are cleaned up
+** using cleanup_mutexes().
+**
+** Return: 0 on success, 1 on failure
+*/
+int	init_mutexes(t_data *data)
 {
 	if (init_single_mutex(&data->print_lock, "print_lock") != 0)
 		return (1);
 	if (init_single_mutex(&data->death_lock, "death_lock") != 0)
-		return(cleanup_mutexes(data));
-	if(init_single_mutex(&data->meal_lock, "meal_lock") != 0)
+		return (cleanup_mutexes(data));
+	if (init_single_mutex(&data->meal_lock, "meal_lock") != 0)
 		return (cleanup_mutexes(data));
 	return (0);
 }

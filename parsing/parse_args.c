@@ -6,12 +6,30 @@
 /*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:33:06 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/28 20:03:29 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/06/30 12:25:00 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+/*
+** Parses and validates command-line arguments
+** @ac: Argument count
+** @av: Argument vector
+** @data: Pointer to the simulation data structure
+**
+** Converts input strings to integers using ft_atoi:
+** - av[1] = number of philosophers
+** - av[2] = time to die (in milliseconds)
+** - av[3] = time to eat (in milliseconds)
+** - av[4] = time to sleep (in milliseconds)
+** - av[5] (optional) = meals each philosopher must eat
+**
+** If 5 arguments are given, meals_required is set; otherwise, it is -1.
+** Sets someone_died to 0 (used as a shared death flag).
+** Returns 1 if input format is wrong or any value is invalid (e.g., <= 0).
+** Returns 0 on successful parsing and value assignment.
+*/
 int	parse_args(int ac, char **av, t_data *data)
 {
 	if (is_error(ac, av))
@@ -25,15 +43,13 @@ int	parse_args(int ac, char **av, t_data *data)
 	else
 		data->meals_required = -1;
 	data->someone_died = 0;
-	if (is_valid_time(data->num_philos)
-		|| is_valid_time(data->time_to_die)
+	if (is_valid_time(data->num_philos) || is_valid_time(data->time_to_die)
 		|| is_valid_time(data->time_to_eat)
-		|| is_valid_time(data->time_to_sleep)
-		|| is_valid_meals(ac, data->meals_required))
+		|| is_valid_time(data->time_to_sleep) || is_valid_meals(ac,
+			data->meals_required))
 	{
 		printf("Error: invalid argument values\n");
 		return (1);
 	}
 	return (0);
 }
-
