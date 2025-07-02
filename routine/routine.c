@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:01:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:35:49 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 11:35:35 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	philo_eat(t_philo *philo)
 {
 	if (!take_forks(philo))
 		return ;
-	if (check_death(philo->data))
+	if (check_if_is_dead(philo->data))
 	{
 		release_forks(philo);
 		return ;
@@ -51,17 +51,26 @@ void	philo_sleep_and_think(t_philo *philo)
 }
 
 /*
-** Main routine executed by each philosopher thread
-** @philo_arg: Pointer to the philosopher struct (cast from void*)
+** Main routine executed by each philosopher thread. It simulates the
+** philosopher's behavior: eating, sleeping, and thinking, while checking
+** for termination conditions.
 **
-** If the philosopher ID is even, delays slightly to stagger fork access.
-** Enters a loop that runs while no one has died:
-** - Eats (philo_eat)
-** - Checks if the philosopher has finished required meals
-** - Sleeps and thinks (philo_sleep_and_think)
-** The routine exits on death or when enough meals have been eaten.
+** Step-by-step:
+** 1. Casts the argument to a t_philo pointer.
+** 2. If the philosopher ID is even, waits for half eat time to reduce
+**    contention on fork mutexes (staggered start).
+** 3. Enters a loop that runs until the simulation ends (death detected).
+** 4. philo_eat: Tries to pick up forks, eats, and updates meal counters.
+**    If the simulation ends during this phase, it exits early.
+** 5. Locks the meal_lock to check if the required number of meals
+**    has been reached. If yes, exits the loop.
+** 6. philo_sleep_and_think: Sleeps for time_to_sleep, then "thinks".
+** 7. If the simulation ends during sleep/thinking, exits early.
 **
-** Return: NULL (used as pthread thread function)
+** Arguments:
+** - philo_arg: void pointer to a t_philo struct
+**
+** Returns NULL when the thread ends execution.
 */
 void	*philo_routine(void *philo_arg)
 {
@@ -73,10 +82,10 @@ void	*philo_routine(void *philo_arg)
 	is_even = (philo->id % 2 == 0);
 	if (is_even)
 		precise_usleep(philo->data->time_to_eat / 2, philo->data);
-	while (!check_death(philo->data))
+	while (!check_if_is_dead(philo->data))
 	{
 		philo_eat(philo);
-		if (check_death(philo->data))
+		if (check_if_is_dead(philo->data))
 			break ;
 		pthread_mutex_lock(&philo->data->meal_lock);
 		meals_done = (philo->data->meals_required > 0
@@ -85,6 +94,8 @@ void	*philo_routine(void *philo_arg)
 		if (meals_done)
 			break ;
 		philo_sleep_and_think(philo);
+		if (check_if_is_dead(philo->data))
+			break ;
 	}
 	return (NULL);
 }

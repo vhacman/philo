@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   print_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:04:46 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:33:52 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 11:10:56 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,10 @@ void	print_philo_status(t_philo *philo, char *msg)
 		color = COLOR_RED;
 	else
 		color = COLOR_RESET;
-	if (ft_strcmp(msg, "died") == 0 || !check_death(philo->data))
+	if (ft_strcmp(msg, "died") == 0 || !check_if_is_dead(philo->data))
 	{
 		printf("%ld %d ", timestamp, philo->id);
 		printf("%s%s%s\n", color, msg, COLOR_RESET);
-		pthread_mutex_unlock(&philo->data->print_lock);
 	}
+	pthread_mutex_unlock(&philo->data->print_lock);
 }

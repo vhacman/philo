@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialization.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:58:01 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:27:34 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 11:30:19 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,18 +43,26 @@ int	initialize_data(t_data *data)
 }
 
 /*
-** Initializes the simulation environment
-** @data: Pointer to the simulation data structure
+** Initializes the simulation environment. This function sets up
+** all required data and synchronization primitives before starting
+** the threads.
 **
-** 1. Initializes all shared mutexes (init_mutexes).
-** 2. Allocates memory and initializes fork mutexes (init_forks).
-** 3. Initializes flags: someone_died and all_ate to 0.
-** 4. Initializes status_lock mutex for shared state protection.
-** 5. Allocates memory for philosopher structures (data->philos).
-** 6. Calls initialize_data() to set per-philosopher values.
+** Step-by-step:
+** 1. init_mutexes: Initializes global mutexes used in the simulation.
+**    If it fails, returns 1 immediately.
+** 2. init_forks: Allocates and initializes fork mutexes.
+**    If it fails, calls cleanup_simulation_stage(data, 1) and returns 1.
+** 3. Initializes 'someone_died' and 'all_ate' flags to 0.
+** 4. Initializes 'status_lock', a mutex used to protect shared state.
+**    If it fails, cleans up forks and mutexes (stage 1) and returns 1.
+** 5. Allocates memory for the philosophers array.
+**    If allocation fails, cleans up forks, mutexes, and status_lock (stage 2).
+** 6. initialize_data: Fills philosopher structures with initial values.
 **
-** On failure, performs partial cleanup using cleanup_simulation_stage().
-** Return: 0 on success, 1 on error.
+** Arguments:
+** - data: pointer to main simulation data structure
+**
+** Returns 0 on success, 1 on any initialization failure.
 */
 int	init_simulation(t_data *data)
 {

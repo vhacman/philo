@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:03:39 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:32:55 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 09:50:07 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	precise_usleep(long m_seconds_to_wait, t_data *data)
 	start_time = get_time();
 	while (1)
 	{
-		if (check_death(data))
+		if (check_if_is_dead(data))
 			return ;
 		time_passed = get_time() - start_time;
 		if (time_passed >= m_seconds_to_wait)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   fork_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:34:10 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:37:42 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 10:07:33 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 ** @philo: Pointer to the philosopher struct
 **
 ** Locks left fork and prints the action.
-** If a death is detected, releases the fork and returns 0.
+** If a death is detected, releases the fork acheckif_is_deadnd returns 0.
 ** Then locks right fork and prints the action.
 ** If a death is detected, releases both forks and returns 0.
 **
@@ -27,14 +27,14 @@ int	take_two_forks_odd(t_philo *philo)
 {
 	pthread_mutex_lock(philo->left_fork);
 	print_philo_status(philo, "has taken a fork");
-	if (check_death(philo->data))
+	if (check_if_is_dead(philo->data))
 	{
 		pthread_mutex_unlock(philo->left_fork);
 		return (0);
 	}
 	pthread_mutex_lock(philo->right_fork);
 	print_philo_status(philo, "has taken a fork");
-	if (check_death(philo->data))
+	if (check_if_is_dead(philo->data))
 	{
 		pthread_mutex_unlock(philo->right_fork);
 		pthread_mutex_unlock(philo->left_fork);
@@ -58,14 +58,14 @@ int	take_two_forks_even(t_philo *philo)
 {
 	pthread_mutex_lock(philo->right_fork);
 	print_philo_status(philo, "has taken a fork");
-	if (check_death(philo->data))
+	if (check_if_is_dead(philo->data))
 	{
 		pthread_mutex_unlock(philo->right_fork);
 		return (0);
 	}
 	pthread_mutex_lock(philo->left_fork);
 	print_philo_status(philo, "has taken a fork");
-	if (check_death(philo->data))
+	if (check_if_is_dead(philo->data))
 	{
 		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);

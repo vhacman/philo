@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:33:45 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:26:11 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 11:29:48 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,8 +51,6 @@ int	is_error(int ac, char **av)
 **
 ** Used to validate number of philosophers and time parameters.
 ** A value is considered invalid if it is less than or equal to 0.
-**
-** Return: 1 if value is invalid, 0 if valid
 */
 int	is_valid_time(int value)
 {
@@ -61,13 +59,10 @@ int	is_valid_time(int value)
 
 /*
 ** Validates the meals_required argument
-** @ac: Argument count
 ** @meals: Parsed number of meals required
 **
 ** Only called if 6 arguments are provided.
 ** Checks that the meals_required value is strictly greater than 0.
-**
-** Return: 1 if invalid (ac == 6 and meals <= 0), 0 if valid
 */
 int	is_valid_meals(int ac, int meals)
 {

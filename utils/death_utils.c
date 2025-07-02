@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   death_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:10:57 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:31:26 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 09:48:19 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	set_death(t_data *data)
 ** Locks the death_lock mutex to safely read someone_died.
 ** Returns 1 if a death was detected, 0 otherwise.
 */
-int	check_death(t_data *data)
+int	check_if_is_dead(t_data *data)
 {
 	int	is_anyone_dead;
 

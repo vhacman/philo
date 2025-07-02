@@ -3,32 +3,41 @@
 /*                                                        :::      ::::::::   */
 /*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:33:06 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:25:00 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 11:29:00 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Parses and validates command-line arguments
-** @ac: Argument count
-** @av: Argument vector
-** @data: Pointer to the simulation data structure
+** Parses and validates the command-line arguments. This function fills
+** the 'data' structure with the input values if they are valid.
 **
-** Converts input strings to integers using ft_atoi:
-** - av[1] = number of philosophers
-** - av[2] = time to die (in milliseconds)
-** - av[3] = time to eat (in milliseconds)
-** - av[4] = time to sleep (in milliseconds)
-** - av[5] (optional) = meals each philosopher must eat
+** Step-by-step:
+** 1. is_error: Checks if the number or format of arguments is incorrect.
+**    Returns 1 immediately if any error is found.
+** 2. ft_atoi: Converts argument strings to integers:
+**    - av[1] -> number of philosophers
+**    - av[2] -> time to die (ms)
+**    - av[3] -> time to eat (ms)
+**    - av[4] -> time to sleep (ms)
+**    - av[5] -> (optional) number of meals each philosopher must eat
+** 3. If av[5] is not provided, sets meals_required to -1 (infinite).
+** 4. Sets someone_died flag to 0 as default.
+** 5. Validates that all time and meal values are positive using:
+**    - is_valid_time: checks if a time value is invalid (≤ 0)
+**    - is_valid_meals: checks if meals_required is invalid
+** 6. If any value is invalid, prints an error message and returns 1.
 **
-** If 5 arguments are given, meals_required is set; otherwise, it is -1.
-** Sets someone_died to 0 (used as a shared death flag).
-** Returns 1 if input format is wrong or any value is invalid (e.g., <= 0).
-** Returns 0 on successful parsing and value assignment.
+** Arguments:
+** - ac: argument count
+** - av: argument vector
+** - data: pointer to simulation data struct to populate
+**
+** Returns 0 if parsing is successful, 1 if any error occurs.
 */
 int	parse_args(int ac, char **av, t_data *data)
 {

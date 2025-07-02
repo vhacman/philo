@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 13:55:03 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:42:54 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 09:48:51 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ void	release_forks(t_philo *philo);
 void	*monitor(void *philo);
 int		check_philo_death(t_data *data, int philo_idx);
 int		check_all_meals_done(t_data *data);
-int		check_death(t_data *data);
+int		check_if_is_dead(t_data *data);
 void	set_death(t_data *data);
 
 /* ************************************************************************** */

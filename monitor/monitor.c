@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:40:35 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:31:06 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 09:50:07 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	*monitor(void *philo)
 	int		curr_philo_index;
 
 	data = (t_data *)philo;
-	while (!check_death(data))
+	while (!check_if_is_dead(data))
 	{
 		if (check_all_meals_done(data))
 			return (NULL);

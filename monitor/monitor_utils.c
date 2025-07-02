@@ -3,14 +3,27 @@
 /*                                                        :::      ::::::::   */
 /*   monitor_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:29:30 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:32:20 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 11:22:09 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+int	has_completed_meals(t_data *data, int philo_idx)
+{
+	int	already_done;
+
+	if (data->meals_required <= 0)
+		return (0);
+	pthread_mutex_lock(&data->meal_lock);
+	already_done = (data->meals_required > 0
+			&& data->philos[philo_idx].meals_eaten >= data->meals_required);
+	pthread_mutex_unlock(&data->meal_lock);
+	return (already_done);
+}
 
 /*
 ** Checks if a philosopher has died
@@ -30,8 +43,7 @@ int	check_philo_death(t_data *data, int philo_idx)
 	long	time_of_last_meal;
 	long	time_since_last_meal;
 
-	if (data->meals_required > 0
-		&& data->philos[philo_idx].meals_eaten >= data->meals_required)
+	if (has_completed_meals(data, philo_idx))
 		return (0);
 	current_time = get_time();
 	pthread_mutex_lock(&data->meal_lock);
@@ -40,7 +52,7 @@ int	check_philo_death(t_data *data, int philo_idx)
 	time_since_last_meal = current_time - time_of_last_meal;
 	if (time_since_last_meal > data->time_to_die)
 	{
-		if (!check_death(data))
+		if (!check_if_is_dead(data))
 		{
 			set_death(data);
 			print_philo_status(&data->philos[philo_idx], "died");
