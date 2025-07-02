@@ -6,12 +6,31 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:29:30 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/02 11:22:09 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/02 11:43:08 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+/*
+** Checks if a specific philosopher has eaten the required number of meals.
+** This check is only performed if 'meals_required' > 0 (i.e., the optional
+** argument was provided). The value is protected by a mutex to avoid race
+** conditions during concurrent access.
+**
+** Step-by-step:
+** 1. If no meal limit is set (meals_required <= 0), returns 0 immediately.
+** 2. Locks meal_lock to safely access shared meals_eaten data.
+** 3. Compares the meals eaten by the philosopher at index 'philo_idx'
+**    to the meals_required threshold.
+** 4. Unlocks the mutex and returns 1 if completed, 0 otherwise.
+**
+** Arguments:
+** - data: pointer to the main simulation data
+** - philo_idx: index of the philosopher in the data->philos array
+**
+** Returns 1 if the philosopher has finished all meals, 0 otherwise.
+*/
 int	has_completed_meals(t_data *data, int philo_idx)
 {
 	int	already_done;
