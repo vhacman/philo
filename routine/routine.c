@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:01:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 10:50:47 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/03 14:25:08 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,40 +86,38 @@ void	philo_sleep_and_think(t_philo *philo)
 }
 
 /*
-** Main routine executed by each philosopher thread. Simulates the
-** philosopher's behavior: eating, sleeping, and thinking, while checking
-** for death or completion conditions.
+** Main routine executed by each philosopher thread.
+** Simulates the philosopher's cycle: eat → sleep → think.
+** Also checks for termination conditions: death or meals completed.
 **
 ** Step-by-step:
 ** 1. Casts the argument to a t_philo pointer.
-** 2. Checks if the philosopher's ID is even.
-** 3. Uses calculate_initial_delay to get a safe base_delay to stagger
-**    even philosophers. If delay > 0, applies it once at the start.
-** 4. Enters a loop that continues while no death is detected.
-** 5. If even, applies base_delay again before eating (extra staggering).
-** 6. philo_eat: Picks up forks, eats, and updates meal counters.
-**    If someone died, exits early.
-** 7. has_completed_meals: Checks if this philosopher met meal quota.
-**    If so, exits the loop.
-** 8. philo_sleep_and_think: Simulates sleeping and thinking actions.
-** 9. If someone dies during sleep or think, exits the loop.
-**
-** Arguments:
-** - philo_arg: void pointer to a t_philo struct
-**
-** Returns NULL when the thread finishes execution.
+** 2. Checks if the philosopher ID is even.
+** 3. Calculates a base delay using calculate_initial_delay.
+**    If the philosopher is even, waits before starting to reduce
+**    fork contention.
+** 4. Enters main loop, which continues until:
+**    - a philosopher dies (check_if_is_dead), or
+**    - the current philosopher finishes all required meals.
+** 5. Inside the loop:
+**    - Even philosophers wait again before trying to eat.
+**    - philo_eat: performs the eating routine.
+**    - has_completed_meals: checks if meal quota is reached.
+**    - philo_sleep_and_think: performs sleeping and thinking actions.
+**    - Each step is followed by a death check.
+** Returns NULL when the thread completes its execution.
 */
 void	*philo_routine(void *philo_arg)
 {
 	t_philo	*philo;
 	int		is_even;
-	long	base_delay;
-
+	int		base_delay;
+	
 	philo = (t_philo *)philo_arg;
 	is_even = (philo->id % 2 == 0);
 	base_delay = calculate_initial_delay(philo->data);
-	if (is_even && base_delay > 0)
-		precise_usleep(base_delay, philo->data);
+	if (is_even)
+		precise_usleep(100, philo->data);
 	while (!check_if_is_dead(philo->data))
 	{
 		if (is_even && base_delay > 0)

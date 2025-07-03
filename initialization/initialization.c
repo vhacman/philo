@@ -6,11 +6,45 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:58:01 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/02 11:30:19 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/03 14:17:39 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*
+** Initializes the simulation state and status mutex
+** @data: pointer to simulation data structure
+**
+** Sets initial values for simulation flags and initializes
+** the status mutex for thread-safe status updates.
+**
+** Return: 0 on success, cleanup stage number on failure
+*/
+int	initialize_simulation_state(t_data *data)
+{
+	data->someone_died = 0;
+	data->all_ate = 0;
+	if (pthread_mutex_init(&data->status_lock, NULL) != 0)
+		return (cleanup_simulation_stage(data, 1));
+	return (0);
+}
+
+/*
+** Allocates memory for philosophers array
+** @data: pointer to simulation data structure
+**
+** Allocates memory for the philosophers array based on num_philos.
+**
+** Return: 0 on success, cleanup stage number on failure
+*/
+int	allocate_philosophers(t_data *data)
+{
+	data->philos = malloc(sizeof(t_philo) * data->num_philos);
+	if (!data->philos)
+		return (cleanup_simulation_stage(data, 2));
+	return (0);
+}
 
 /*
 ** Initializes philosopher-specific data
@@ -41,28 +75,18 @@ int	initialize_data(t_data *data)
 	}
 	return (0);
 }
-
 /*
-** Initializes the simulation environment. This function sets up
-** all required data and synchronization primitives before starting
-** the threads.
+** Initializes the complete simulation
+** @data: pointer to simulation data structure
 **
-** Step-by-step:
-** 1. init_mutexes: Initializes global mutexes used in the simulation.
-**    If it fails, returns 1 immediately.
-** 2. init_forks: Allocates and initializes fork mutexes.
-**    If it fails, calls cleanup_simulation_stage(data, 1) and returns 1.
-** 3. Initializes 'someone_died' and 'all_ate' flags to 0.
-** 4. Initializes 'status_lock', a mutex used to protect shared state.
-**    If it fails, cleans up forks and mutexes (stage 1) and returns 1.
-** 5. Allocates memory for the philosophers array.
-**    If allocation fails, cleans up forks, mutexes, and status_lock (stage 2).
-** 6. initialize_data: Fills philosopher structures with initial values.
+** Performs all initialization steps in order:
+** 1. Initialize mutexes
+** 2. Initialize forks
+** 3. Initialize simulation state
+** 4. Allocate philosophers array
+** 5. Initialize data structures
 **
-** Arguments:
-** - data: pointer to main simulation data structure
-**
-** Returns 0 on success, 1 on any initialization failure.
+** Return: 0 on success, cleanup stage number on failure
 */
 int	init_simulation(t_data *data)
 {
@@ -70,12 +94,9 @@ int	init_simulation(t_data *data)
 		return (1);
 	if (init_forks(data) != 0)
 		return (cleanup_simulation_stage(data, 1));
-	data->someone_died = 0;
-	data->all_ate = 0;
-	if (pthread_mutex_init(&data->status_lock, NULL) != 0)
+	if (initialize_simulation_state(data) != 0)
 		return (cleanup_simulation_stage(data, 1));
-	data->philos = malloc(sizeof(t_philo) * data->num_philos);
-	if (!data->philos)
+	if (allocate_philosophers(data) != 0)
 		return (cleanup_simulation_stage(data, 2));
 	initialize_data(data);
 	return (0);

@@ -6,11 +6,34 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:33:06 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/02 11:29:00 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/03 12:14:50 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*
+** Validates all simulation arguments
+** @ac: argument count
+** @data: pointer to simulation data structure
+**
+** Checks if all timing values and philosopher count are valid.
+** Also validates the meals requirement if provided.
+**
+** Return: 1 if any argument is invalid, 0 if all arguments are valid
+*/
+int	validate_arguments(int ac, t_data *data)
+{
+	if (is_valid_time(data->num_philos) || is_valid_time(data->time_to_die)
+		|| is_valid_time(data->time_to_eat)
+		|| is_valid_time(data->time_to_sleep) || is_valid_meals(ac,
+			data->meals_required))
+	{
+		printf("Error: invalid argument values\n");
+		return (1);
+	}
+	return (0);
+}
 
 /*
 ** Parses and validates the command-line arguments. This function fills
@@ -28,16 +51,7 @@
 ** 3. If av[5] is not provided, sets meals_required to -1 (infinite).
 ** 4. Sets someone_died flag to 0 as default.
 ** 5. Validates that all time and meal values are positive using:
-**    - is_valid_time: checks if a time value is invalid (≤ 0)
-**    - is_valid_meals: checks if meals_required is invalid
-** 6. If any value is invalid, prints an error message and returns 1.
-**
-** Arguments:
-** - ac: argument count
-** - av: argument vector
-** - data: pointer to simulation data struct to populate
-**
-** Returns 0 if parsing is successful, 1 if any error occurs.
+**    validate_arguments
 */
 int	parse_args(int ac, char **av, t_data *data)
 {
@@ -52,13 +66,6 @@ int	parse_args(int ac, char **av, t_data *data)
 	else
 		data->meals_required = -1;
 	data->someone_died = 0;
-	if (is_valid_time(data->num_philos) || is_valid_time(data->time_to_die)
-		|| is_valid_time(data->time_to_eat)
-		|| is_valid_time(data->time_to_sleep) || is_valid_meals(ac,
-			data->meals_required))
-	{
-		printf("Error: invalid argument values\n");
-		return (1);
-	}
+	validate_arguments(ac, data);
 	return (0);
 }

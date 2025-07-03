@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   init_mutexes.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:17:57 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/30 12:28:01 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/03 12:37:10 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,6 @@
 **
 ** Calls pthread_mutex_init() on the given mutex.
 ** If initialization fails, prints an error with the mutex name.
-**
-** Return: 0 on success, 1 on failure
 */
 int	init_single_mutex(pthread_mutex_t *mutex, char *name)
 {
@@ -43,8 +41,6 @@ int	init_single_mutex(pthread_mutex_t *mutex, char *name)
 **
 ** If any initialization fails, previously initialized mutexes are cleaned up
 ** using cleanup_mutexes().
-**
-** Return: 0 on success, 1 on failure
 */
 int	init_mutexes(t_data *data)
 {

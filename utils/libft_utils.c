@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 11:37:37 by vhacman           #+#    #+#             */
-/*   Updated: 2025/06/26 14:21:25 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/03 12:18:58 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,14 +115,14 @@ int	ft_atoi(const char *str)
 }
 
 /*
-** Checks if a string contains only digits
-** @str: String to validate
+** Checks whether a given string represents a valid non-negative integer.
+** The string must contain only digit characters (0–9) and must not be empty.
 **
-** This function verifies that a string contains only decimal digits.
-** It returns 0 if the string is empty or contains any non-digit characters.
-** Useful for validating numeric input before conversion.
-**
-** Return: 1 if string contains only digits and is not empty, 0 otherwise
+** Step-by-step:
+** 1. Returns 0 if the string is empty.
+** 2. Iterates through each character of the string.
+** 3. If any character is not a digit (ft_isdigit returns 0), returns 0.
+** 4. If all characters are digits, returns 1.
 */
 int	is_number(char *str)
 {

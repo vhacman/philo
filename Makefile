@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+         #
+#    By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/06/26 11:23:24 by vhacman           #+#    #+#              #
-#    Updated: 2025/06/28 20:17:17 by vhacman          ###   ########.fr        #
+#    Updated: 2025/07/03 17:47:51 by vhacman          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,7 @@ NAME	= philo
 # -Werror: treat warnings as errors
 # -g: enable debugging symbols
 # -Iincludes: add 'includes' directory to include path
-CC		= cc
+CC		= gcc
 CFLAGS	= -Wall -Wextra -Werror -g -Iincludes
 
 SRC = \

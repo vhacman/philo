@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 13:55:03 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 09:57:15 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/03 14:17:29 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ typedef struct s_data
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				meals_required;
-
+	
 	/* === SIMULATION STATE === */
 	int				someone_died;
 	int				all_ate;
@@ -63,7 +63,7 @@ typedef struct s_data
 	pthread_mutex_t	death_lock;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	status_lock;
-
+	
 	/* === PHILOSOPHERS === */
 	t_philo			*philos;
 }	t_data;
@@ -89,7 +89,6 @@ int		initialize_data(t_data *data);
 int		create_threads(t_data *data);
 int		join_threads(t_data *data);
 void	*philo_routine(void *philo_arg);
-
 /* ************************************************************************** */
 /*                              PARSING                                       */
 /* ************************************************************************** */
