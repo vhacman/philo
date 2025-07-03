@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 13:55:03 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/02 09:48:51 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/03 09:57:15 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ void	philo_eat(t_philo *philo);
 void	philo_sleep_and_think(t_philo *philo);
 void	update_meal_time(t_philo *philo);
 int		handle_single_philo(t_philo *philo);
+int		has_completed_meals(t_data *data, int philo_idx);
 
 /* ************************************************************************** */
 /*                              FORK UTILS                                    */
