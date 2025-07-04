@@ -6,31 +6,28 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:01:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 14:25:08 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 15:07:18 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Calculates a safe base_delay delay for even-numbered philosophers
-** to wait before starting their routine. This helps to reduce
-** contention when picking up forks at the beginning.
+** Calculates how long even-numbered philosophers should wait before
+** trying to eat. This delay helps avoid deadlocks and reduces fork
+** contention at the start of the simulation.
 **
-** Step-by-step:
-** 1. Computes max_safe_delay as: time_to_die - time_to_eat - time_to_sleep.
-**    This ensures the delay does not risk philosopher death.
-** 2. Sets initial base_delay to half of time_to_eat for staggering.
-** 3. If max_safe_delay is non-positive, sets base_delay to 0 (no delay allowed).
-** 4. If base_delay is greater than max_safe_delay, it is
-**     capped to max_safe_delay.
-**
-** This delay is applied only to even philosophers at the start.
+** How it works:
+** 1. Calculates the maximum safe delay based on:
+**    time_to_die - time_to_eat - time_to_sleep
+** 2. Uses half of time_to_eat as the base delay.
+** 3. If the safe delay is too small (≤ 0), sets base delay to 0.
+** 4. If base delay is too large, caps it to the safe limit.
 **
 ** Arguments:
-** - data: pointer to main simulation data
+** - data: pointer to the simulation data structure
 **
-** Returns the computed base_delay in milliseconds.
+** Returns a safe delay in milliseconds.
 */
 long	calculate_initial_delay(t_data *data)
 {
@@ -72,56 +69,74 @@ void	philo_eat(t_philo *philo)
 }
 
 /*
-** Executes sleeping and thinking phases
-** @philo: Pointer to the philosopher struct
+** Simulates the sleep and think actions of a philosopher.
 **
-** Prints "is sleeping" and waits for time_to_sleep.
-** Then prints "is thinking" to indicate the next phase.
+** Step-by-step:
+** 1. Prints that the philosopher is sleeping.
+** 2. Sleeps for time_to_sleep milliseconds using precise_usleep.
+** 3. Prints that the philosopher is thinking.
+** 4. If the number of philosophers is odd, waits 1 ms to avoid
+**    synchronization issues.
+**
+** Why the extra 1 ms:
+** With an odd number of philosophers (e.g., 5), there's always one
+** philosopher out of sync. This small delay prevents all threads
+** from re-aligning over time, which would increase fork collisions
+** and possibly cause starvation.
 */
 void	philo_sleep_and_think(t_philo *philo)
 {
 	print_philo_status(philo, "is sleeping");
 	precise_usleep(philo->data->time_to_sleep, philo->data);
 	print_philo_status(philo, "is thinking");
+	if ((philo->data->num_philos % 2) == 1)
+		precise_usleep(1, philo->data);
 }
 
 /*
-** Main routine executed by each philosopher thread.
-** Simulates the philosopher's cycle: eat → sleep → think.
-** Also checks for termination conditions: death or meals completed.
+** Main function for each philosopher thread. It controls the behavior
+** of a philosopher: eating, sleeping, thinking, and checking if they
+** should stop.
 **
-** Step-by-step:
-** 1. Casts the argument to a t_philo pointer.
+** How it works:
+** 1. Converts the argument to a philosopher pointer.
 ** 2. Checks if the philosopher ID is even.
-** 3. Calculates a base delay using calculate_initial_delay.
-**    If the philosopher is even, waits before starting to reduce
-**    fork contention.
-** 4. Enters main loop, which continues until:
-**    - a philosopher dies (check_if_is_dead), or
-**    - the current philosopher finishes all required meals.
-** 5. Inside the loop:
-**    - Even philosophers wait again before trying to eat.
-**    - philo_eat: performs the eating routine.
-**    - has_completed_meals: checks if meal quota is reached.
-**    - philo_sleep_and_think: performs sleeping and thinking actions.
-**    - Each step is followed by a death check.
-** Returns NULL when the thread completes its execution.
+** 3. Even philosophers wait a short time before starting, to avoid
+**    taking forks at the same time as the others.
+** 4. Enters a loop that runs until:
+**    - the simulation ends due to death, or
+**    - the philosopher has eaten enough times.
+** 5. In each loop:
+**    - Even philosophers may wait again to reduce collisions.
+**    - If someone died, exit.
+**    - Eat using philo_eat().
+**    - If someone died while eating, exit.
+**    - If this philosopher finished all meals, exit.
+**    - Sleep and think using philo_sleep_and_think().
+**    - If someone died during sleep, exit.
+**
+** Arguments:
+** - philo_arg: pointer to a philosopher structure (void*)
+**
+** Returns NULL when the philosopher is done.
 */
 void	*philo_routine(void *philo_arg)
 {
 	t_philo	*philo;
 	int		is_even;
 	int		base_delay;
-	
+
 	philo = (t_philo *)philo_arg;
 	is_even = (philo->id % 2 == 0);
 	base_delay = calculate_initial_delay(philo->data);
 	if (is_even)
-		precise_usleep(100, philo->data);
+		precise_usleep(philo->data->time_to_eat / 2, philo->data);
 	while (!check_if_is_dead(philo->data))
 	{
 		if (is_even && base_delay > 0)
 			precise_usleep(base_delay, philo->data);
+		if (check_if_is_dead(philo->data))
+			break ;
 		philo_eat(philo);
 		if (check_if_is_dead(philo->data))
 			break ;

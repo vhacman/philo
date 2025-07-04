@@ -6,25 +6,32 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:33:06 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 12:14:50 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 14:44:48 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Validates all simulation arguments
-** @ac: argument count
-** @data: pointer to simulation data structure
-**
-** Checks if all timing values and philosopher count are valid.
-** Also validates the meals requirement if provided.
-**
-** Return: 1 if any argument is invalid, 0 if all arguments are valid
+** Checks whether the parsed arguments in the data struct are valid.
+** 1. is_valid_philos:
+**    - Fails if the number of philosophers is less than 1.
+**    - Prints an error and returns 1 if invalid.
+** 2. is_valid_time:
+**    - Fails if any time values (die, eat, sleep) are ≤ 0.
+** 3. is_valid_meals:
+**    - Fails if meals_required is present but ≤ 0.
+**    - Only checked if ac == 6.
+** 4. If any value is invalid, prints an error and returns 1.
 */
 int	validate_arguments(int ac, t_data *data)
 {
-	if (is_valid_time(data->num_philos) || is_valid_time(data->time_to_die)
+	if (is_valid_philos(data->num_philos))
+	{
+		printf("Error: philos must be at least 1\n");
+		return (1);
+	}
+	if (is_valid_time(data->time_to_die)
 		|| is_valid_time(data->time_to_eat)
 		|| is_valid_time(data->time_to_sleep) || is_valid_meals(ac,
 			data->meals_required))
@@ -66,6 +73,7 @@ int	parse_args(int ac, char **av, t_data *data)
 	else
 		data->meals_required = -1;
 	data->someone_died = 0;
-	validate_arguments(ac, data);
+	if (validate_arguments(ac, data))
+		return (1);
 	return (0);
 }

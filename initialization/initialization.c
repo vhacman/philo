@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:58:01 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 14:17:39 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 14:46:10 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,7 @@ int	initialize_data(t_data *data)
 	}
 	return (0);
 }
+
 /*
 ** Initializes the complete simulation
 ** @data: pointer to simulation data structure

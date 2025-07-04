@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/26 14:33:45 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 12:18:34 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 14:40:36 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,4 +60,12 @@ int	is_valid_time(int value)
 int	is_valid_meals(int ac, int meals)
 {
 	return (ac == 6 && meals <= 0);
+}
+
+/*
+** Validates the philosopher count (> 0)
+*/
+int	is_valid_philos(int n_philos)
+{
+	return (n_philos <= 0);
 }

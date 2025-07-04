@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:03:39 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 18:18:02 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 15:19:53 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,30 +29,49 @@ long	get_time(void)
 }
 
 /*
-** Sleeps for a precise number of milliseconds
-** @m_seconds_to_wait: Time to wait in milliseconds
-** @data: Pointer to the simulation data structure
+** Sleeps for an exact number of milliseconds while periodically checking
+** if the simulation has ended due to a philosopher's death.
 **
-** Waits in a loop until the specified time has passed.
-** Checks the death flag to exit early if a philosopher has died.
-** Uses shorter sleep intervals to improve timing precision and responsiveness.
+** Step-by-step:
+** 1. Stores the start timestamp using get_time().
+** 2. Enters a loop that continues until the desired delay is reached.
+** 3. On each iteration:
+**    - Checks if a philosopher has died (check_if_is_dead). If so, exits.
+**    - Computes the elapsed time since start.
+**    - If the target time is reached or exceeded, breaks the loop.
+**    - Otherwise, calculates the remaining time and adapts the sleep:
+**        - If remaining > 20 ms: sleeps for (remaining - 10) ms.
+**        - If remaining > 5 ms: sleeps for 1 ms.
+**        - Else: sleeps for 100 µs (ultra short final delay).
+**
+** This avoids oversleeping and ensures accurate timing without busy wait.
+** Returns nothing. Exits early if death is detected.
 */
+
 void	precise_usleep(long m_seconds_to_wait, t_data *data)
 {
 	long	start_time;
-	long	time_passed;
+	long	current_time;
+	long	elapsed;
+	long	remaining;
 
 	start_time = get_time();
+	
 	while (1)
 	{
 		if (check_if_is_dead(data))
 			return ;
-		time_passed = get_time() - start_time;
-		if (time_passed >= m_seconds_to_wait)
+		current_time = get_time();
+		elapsed = current_time - start_time;
+		if (elapsed >= m_seconds_to_wait)
 			break ;
-		if (m_seconds_to_wait - time_passed > 10)
-			usleep((m_seconds_to_wait - time_passed) * 500);
+		remaining = m_seconds_to_wait - elapsed;
+		if (remaining > 20)
+			usleep((remaining - 10) * 1000);
+		else if (remaining > 5)
+			usleep(1000);
+
 		else
-			usleep(500);
+			usleep(100);
 	}
 }
