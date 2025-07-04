@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 11:45:32 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 14:40:24 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 17:44:07 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ int	handle_single_philo(t_philo *philo)
 {
 	pthread_mutex_lock(philo->left_fork);
 	print_philo_status(philo, "has taken a fork");
-	precise_usleep(philo->data->time_to_die + 1, philo->data);
+	precise_usleep(philo->data->time_to_die + 1, philo->data, philo);
 	pthread_mutex_unlock(philo->left_fork);
 	return (0);
 }

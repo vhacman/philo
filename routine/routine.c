@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:01:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 15:07:18 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 17:58:52 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ void	philo_eat(t_philo *philo)
 	}
 	update_meal_time(philo);
 	print_philo_status(philo, "is eating");
-	precise_usleep(philo->data->time_to_eat, philo->data);
+	precise_usleep(philo->data->time_to_eat, philo->data, philo);
 	release_forks(philo);
 }
 
@@ -87,10 +87,11 @@ void	philo_eat(t_philo *philo)
 void	philo_sleep_and_think(t_philo *philo)
 {
 	print_philo_status(philo, "is sleeping");
-	precise_usleep(philo->data->time_to_sleep, philo->data);
-	print_philo_status(philo, "is thinking");
+	precise_usleep(philo->data->time_to_sleep, philo->data, philo);
+	if (!check_if_is_dead(philo->data))
+		print_philo_status(philo, "is thinking");
 	if ((philo->data->num_philos % 2) == 1)
-		precise_usleep(1, philo->data);
+		precise_usleep(1, philo->data, philo);
 }
 
 /*
@@ -125,16 +126,25 @@ void	*philo_routine(void *philo_arg)
 	t_philo	*philo;
 	int		is_even;
 	int		base_delay;
+	long	time_since_last_meal;
+	long	time_left;
 
 	philo = (t_philo *)philo_arg;
 	is_even = (philo->id % 2 == 0);
+	time_since_last_meal = get_time() - philo->last_meal_time;
 	base_delay = calculate_initial_delay(philo->data);
-	if (is_even)
-		precise_usleep(philo->data->time_to_eat / 2, philo->data);
+	if (is_even 
+		&& time_since_last_meal + philo->data->time_to_eat < philo->data->time_to_die)
+		precise_usleep(philo->data->time_to_eat / 2, philo->data, philo);
 	while (!check_if_is_dead(philo->data))
 	{
 		if (is_even && base_delay > 0)
-			precise_usleep(base_delay, philo->data);
+		{
+			time_left = philo->data->time_to_die
+			- (get_time() - philo->last_meal_time);
+		if (time_left > base_delay)
+			precise_usleep(base_delay, philo->data, philo);
+		}
 		if (check_if_is_dead(philo->data))
 			break ;
 		philo_eat(philo);

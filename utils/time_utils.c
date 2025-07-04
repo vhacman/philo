@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:03:39 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 15:22:12 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 17:55:40 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,24 @@ long	get_time(void)
 ** This avoids oversleeping and ensures accurate timing without busy wait.
 ** Returns nothing. Exits early if death is detected.
 */
-void	precise_usleep(long m_seconds_to_wait, t_data *data)
+void	precise_usleep(long m_seconds_to_wait, t_data *data, t_philo *philo)
 {
 	long	start_time;
 	long	current_time;
 	long	elapsed;
 	long	remaining;
+	long	time_to_die;
 
 	start_time = get_time();
+	if (philo != NULL)
+	{
+		time_to_die = data->time_to_die
+			- (start_time - philo->last_meal_time);
+		if (time_to_die <= 0)
+			return ;
+		if (m_seconds_to_wait > time_to_die)
+			m_seconds_to_wait = time_to_die;
+	}
 	while (1)
 	{
 		if (check_if_is_dead(data))
