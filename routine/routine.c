@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:01:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 17:58:52 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 18:34:20 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,17 +133,17 @@ void	*philo_routine(void *philo_arg)
 	is_even = (philo->id % 2 == 0);
 	time_since_last_meal = get_time() - philo->last_meal_time;
 	base_delay = calculate_initial_delay(philo->data);
-	if (is_even 
-		&& time_since_last_meal + philo->data->time_to_eat < philo->data->time_to_die)
+	if (is_even && time_since_last_meal
+		+ philo->data->time_to_eat < philo->data->time_to_die)
 		precise_usleep(philo->data->time_to_eat / 2, philo->data, philo);
 	while (!check_if_is_dead(philo->data))
 	{
 		if (is_even && base_delay > 0)
 		{
 			time_left = philo->data->time_to_die
-			- (get_time() - philo->last_meal_time);
-		if (time_left > base_delay)
-			precise_usleep(base_delay, philo->data, philo);
+				- (get_time() - philo->last_meal_time);
+			if (time_left > base_delay)
+				precise_usleep(base_delay, philo->data, philo);
 		}
 		if (check_if_is_dead(philo->data))
 			break ;
