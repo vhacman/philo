@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:03:39 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 15:19:53 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/04 15:21:49 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,6 @@ void	precise_usleep(long m_seconds_to_wait, t_data *data)
 			usleep((remaining - 10) * 1000);
 		else if (remaining > 5)
 			usleep(1000);
-
 		else
 			usleep(100);
 	}
