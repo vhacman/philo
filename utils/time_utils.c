@@ -3,14 +3,46 @@
 /*                                                        :::      ::::::::   */
 /*   time_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:03:39 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 18:32:56 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 14:43:37 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+/*
+** Calculates how long even-numbered philosophers should wait before
+** trying to eat. This delay helps avoid deadlocks and reduces fork
+** contention at the start of the simulation.
+**
+** How it works:
+** 1. Calculates the maximum safe delay based on:
+**    time_to_die - time_to_eat - time_to_sleep
+** 2. Uses half of time_to_eat as the base delay.
+** 3. If the safe delay is too small (≤ 0), sets base delay to 0.
+** 4. If base delay is too large, caps it to the safe limit.
+**
+** Arguments:
+** - data: pointer to the simulation data structure
+**
+** Returns a safe delay in milliseconds.
+*/
+long	calculate_initial_delay(t_data *data)
+{
+	long	base_delay;
+	long	max_safe_delay;
+
+	max_safe_delay = data->time_to_die - data->time_to_eat
+		- data->time_to_sleep;
+	base_delay = data->time_to_eat / 2;
+	if (max_safe_delay <= 0)
+		base_delay = 0;
+	else if (base_delay > max_safe_delay)
+		base_delay = max_safe_delay;
+	return (base_delay);
+}
 
 /*
 ** Returns the current time in milliseconds

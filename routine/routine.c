@@ -3,157 +3,136 @@
 /*                                                        :::      ::::::::   */
 /*   routine.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:01:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 18:34:20 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 15:06:39 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Calculates how long even-numbered philosophers should wait before
-** trying to eat. This delay helps avoid deadlocks and reduces fork
-** contention at the start of the simulation.
+** Initializes the state of a philosopher before starting the routine.
+** It checks if the philosopher is even, calculates a base delay, and
+** applies a small initial wait if it's safe to do so.
 **
-** How it works:
-** 1. Calculates the maximum safe delay based on:
-**    time_to_die - time_to_eat - time_to_sleep
-** 2. Uses half of time_to_eat as the base delay.
-** 3. If the safe delay is too small (≤ 0), sets base delay to 0.
-** 4. If base delay is too large, caps it to the safe limit.
+**  Stores time_to_eat and time_to_die from simulation data.
+**  Calculates how long it's been since the last meal.
+**  Calculates base_delay using calculate_initial_delay().
+**  If the philosopher is even, and there's enough time before death,
+**  sleeps for half of time_to_eat to avoid all philosophers acting
+**  at the same time.
 **
 ** Arguments:
-** - data: pointer to the simulation data structure
-**
-** Returns a safe delay in milliseconds.
+** - philo: pointer to the philosopher structure
+** - is_even: output flag, 1 if the philosopher ID is even
+** - base_delay: output value, used to delay eating during the cycle
 */
-long	calculate_initial_delay(t_data *data)
+static void	init_philosopher_state(t_philo *philo, int	*is_even,
+									int *base_delay)
 {
-	long	base_delay;
-	long	max_safe_delay;
+	long	time_since_last_meal;
+	long	time_to_die;
+	long	time_to_eat;
 
-	max_safe_delay = data->time_to_die - data->time_to_eat
-		- data->time_to_sleep;
-	base_delay = data->time_to_eat / 2;
-	if (max_safe_delay <= 0)
-		base_delay = 0;
-	else if (base_delay > max_safe_delay)
-		base_delay = max_safe_delay;
-	return (base_delay);
+	time_to_eat = philo->data->time_to_eat;
+	time_to_die = philo->data->time_to_die;
+	*is_even = (philo->id % 2 == 0);
+	time_since_last_meal = get_time() - philo->last_meal_time;
+	*base_delay = calculate_initial_delay(philo->data);
+	if (*is_even && time_since_last_meal + time_to_eat
+		< time_to_die)
+		precise_usleep(time_to_eat / 2, philo->data, philo);
 }
 
 /*
-** Executes the philosopher's eating phase
-** @philo: Pointer to the philosopher struct
+** Adds a small delay for even philosophers before they eat.
+** This helps reduce fork contention by spacing out thread actions.
 **
-** Attempts to take both forks using take_forks().
-** If a death is detected before or during the phase, forks are released.
-** If successful, prints "is eating", updates meal info, and sleeps.
-** Releases the forks after eating.
+** 1. If base_delay is 0 or negative, returns immediately.
+** 2. Calculates how much time is left before the philosopher dies.
+** 3. If there is enough time left, sleeps for base_delay milliseconds
+**    using precise_usleep.
+** This avoids situations where a philosopher would die during the delay.
+**
+** Arguments:
+** - philo: pointer to the philosopher
+** - base_delay: delay to apply (in milliseconds)
 */
-void	philo_eat(t_philo *philo)
+static void	apply_even_philo_delay(t_philo *philo, int base_delay)
 {
-	if (!take_forks(philo))
+	long	time_left;
+	long	time_to_die;
+	long	last_meal_time;
+
+	last_meal_time = philo->last_meal_time;
+	time_to_die = philo->data->time_to_die;
+	if (base_delay <= 0)
 		return ;
+	time_left = time_to_die - (get_time() - last_meal_time);
+	if (time_left > base_delay)
+		precise_usleep(base_delay, philo->data, philo);
+}
+
+/*
+** Executes one full cycle for a philosopher: wait (if even),
+** eat, check if finished, sleep and think.
+**
+** 1. If the philosopher is even, applies a delay to avoid
+**    collisions with other threads (fork contention).
+** 2. If someone has died, exits early.
+** 3. philo_eat: tries to eat and updates meals.
+** 4. If someone died during eating, exits.
+** 5. Checks if the philosopher has completed all meals.
+**    If yes, exits.
+** 6. philo_sleep_and_think: sleeps and prints status.
+**
+** Arguments:
+** - philo: pointer to the philosopher structure
+** - is_even: 1 if the philosopher ID is even
+** - base_delay: delay to apply if philosopher is even
+** Returns 1 if the philosopher must stop, 0 to continue looping.
+*/
+static int	execute_cycle(t_philo *philo, int is_even, int base_delay)
+{
+	if (is_even)
+		apply_even_philo_delay(philo, base_delay);
 	if (check_if_is_dead(philo->data))
-	{
-		release_forks(philo);
-		return ;
-	}
-	update_meal_time(philo);
-	print_philo_status(philo, "is eating");
-	precise_usleep(philo->data->time_to_eat, philo->data, philo);
-	release_forks(philo);
+		return (1);
+	philo_eat(philo);
+	if (check_if_is_dead(philo->data))
+		return (1);
+	if (has_completed_meals(philo->data, philo->id - 1))
+		return (1);
+	philo_sleep_and_think(philo);
+	return (0);
 }
 
 /*
-** Simulates the sleep and think actions of a philosopher.
-**
-** Step-by-step:
-** 1. Prints that the philosopher is sleeping.
-** 2. Sleeps for time_to_sleep milliseconds using precise_usleep.
-** 3. Prints that the philosopher is thinking.
-** 4. If the number of philosophers is odd, waits 1 ms to avoid
-**    synchronization issues.
-**
-** Why the extra 1 ms:
-** With an odd number of philosophers (e.g., 5), there's always one
-** philosopher out of sync. This small delay prevents all threads
-** from re-aligning over time, which would increase fork collisions
-** and possibly cause starvation.
-*/
-void	philo_sleep_and_think(t_philo *philo)
-{
-	print_philo_status(philo, "is sleeping");
-	precise_usleep(philo->data->time_to_sleep, philo->data, philo);
-	if (!check_if_is_dead(philo->data))
-		print_philo_status(philo, "is thinking");
-	if ((philo->data->num_philos % 2) == 1)
-		precise_usleep(1, philo->data, philo);
-}
-
-/*
-** Main function for each philosopher thread. It controls the behavior
-** of a philosopher: eating, sleeping, thinking, and checking if they
-** should stop.
-**
-** How it works:
-** 1. Converts the argument to a philosopher pointer.
-** 2. Checks if the philosopher ID is even.
-** 3. Even philosophers wait a short time before starting, to avoid
-**    taking forks at the same time as the others.
-** 4. Enters a loop that runs until:
-**    - the simulation ends due to death, or
-**    - the philosopher has eaten enough times.
-** 5. In each loop:
-**    - Even philosophers may wait again to reduce collisions.
-**    - If someone died, exit.
-**    - Eat using philo_eat().
-**    - If someone died while eating, exit.
-**    - If this philosopher finished all meals, exit.
-**    - Sleep and think using philo_sleep_and_think().
-**    - If someone died during sleep, exit.
-**
-** Arguments:
-** - philo_arg: pointer to a philosopher structure (void*)
-**
-** Returns NULL when the philosopher is done.
+** Main routine run by each philosopher thread.
+** Controls the philosopher's behavior during the simulation.
+** 1. Converts the argument to a t_philo pointer.
+** 2. Calls init_philosopher_state to:
+**    - Check if the philosopher is even
+**    - Calculate the delay to apply before eating
+** 3. Enters a loop that continues until:
+**    - A philosopher dies (check_if_is_dead)
+**    - Or the current philosopher finishes (via execute_cycle)
+** 4. In each loop, execute_cycle performs one full cycle.
+** Returns NULL when the thread ends.
 */
 void	*philo_routine(void *philo_arg)
 {
 	t_philo	*philo;
 	int		is_even;
 	int		base_delay;
-	long	time_since_last_meal;
-	long	time_left;
 
 	philo = (t_philo *)philo_arg;
-	is_even = (philo->id % 2 == 0);
-	time_since_last_meal = get_time() - philo->last_meal_time;
-	base_delay = calculate_initial_delay(philo->data);
-	if (is_even && time_since_last_meal
-		+ philo->data->time_to_eat < philo->data->time_to_die)
-		precise_usleep(philo->data->time_to_eat / 2, philo->data, philo);
+	init_philosopher_state(philo, &is_even, &base_delay);
 	while (!check_if_is_dead(philo->data))
 	{
-		if (is_even && base_delay > 0)
-		{
-			time_left = philo->data->time_to_die
-				- (get_time() - philo->last_meal_time);
-			if (time_left > base_delay)
-				precise_usleep(base_delay, philo->data, philo);
-		}
-		if (check_if_is_dead(philo->data))
-			break ;
-		philo_eat(philo);
-		if (check_if_is_dead(philo->data))
-			break ;
-		if (has_completed_meals(philo->data, philo->id - 1))
-			break ;
-		philo_sleep_and_think(philo);
-		if (check_if_is_dead(philo->data))
+		if (execute_cycle(philo, is_even, base_delay))
 			break ;
 	}
 	return (NULL);

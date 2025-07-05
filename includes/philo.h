@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 13:55:03 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 17:39:05 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 14:43:54 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,6 +104,7 @@ int		is_valid_philos(int n_philos);
 
 long	get_time(void);
 void	precise_usleep(long m_seconds_to_wait, t_data *data, t_philo *philo);
+long	calculate_initial_delay(t_data *data);
 
 /* ************************************************************************** */
 /*                              ROUTINE UTILS                                 */
