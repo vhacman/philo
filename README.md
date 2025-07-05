@@ -95,6 +95,7 @@ Simulazione che termina solo dopo che ciascun filosofo ha mangiato almeno 3 volt
 - Mutex per dati critici come last_meal_time e meals_eaten
 
 <h2> FILE PRINCIPALI </h2>
+
 | File                       | Ruolo principale                                            |
 | -------------------------- | ----------------------------------------------------------- |
 | `main.c`                   | Punto d’ingresso. Inizializza, avvia e termina il programma |
@@ -117,14 +118,18 @@ Simulazione che termina solo dopo che ciascun filosofo ha mangiato almeno 3 volt
 
 ---
 <h3> Contribuisci in modo rispettoso </h3>
+
 Se trovi utile questo progetto, ti invito a non clonare direttamente la repository.
+
 Fare una **fork**:
 - ti permette di avere una copia personale su cui lavorare liberamente;
 - rende trasparente il tuo interesse per il progetto;
 - mi aiuta a costruire un GitHub più professionale e tracciabile, mostrando quante persone hanno interagito realmente con il mio lavoro.
  In questo modo posso far crescere il mio profilo e migliorare come sviluppatrice.
+
 <p>Come procedere</p>
 1. Clicca in alto a destra su **Fork**
+
 2. Clona la tua copia con:
 
 ```bash
