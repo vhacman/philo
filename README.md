@@ -138,9 +138,10 @@ git clone https://github.com/<il-tuo-username>/<nome-repo>.git
 ```
 ---
 
-<h2> 👤 Autrice </h2>
-Gabriela Viorica HACMAN
-42 Roma
+<h2> 👤 Author </h2>
+
+**vhacman**
+- 42 Intra Profile: [vhacman](https://profile.intra.42.fr/)
 
 <h2> Contatti 🧑‍💻 </h2>
 
