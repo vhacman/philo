@@ -19,6 +19,7 @@ Nessun filosofo sa in anticipo cosa faranno gli altri.
 - **Livelock:** tutti cambiano stato continuamente senza avanzare.
 
 <h2>La sfida:</h2>
+
 - Evitare **deadlock**
 - Prevenire **race conditions**
 - Garantire che nessuno **muoia di fame**
