@@ -141,6 +141,7 @@ Fare una **fork**:
  In questo modo posso far crescere il mio profilo e migliorare come sviluppatrice.
 
 <p>Come procedere</p>
+
 1. Clicca in alto a destra su **Fork**
 
 2. Clona la tua copia con:
