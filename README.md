@@ -1,10 +1,9 @@
-## 🧠🍽️ PHILOSOPERS 🍽️🧠##
-
+# 🧠🍽️ PHILOSOPERS 🍽️🧠
 ---
-# Dining Philosophers Problem
+<h1> Dining Philosophers Problem </h1>
 Problema di sincronizzazione concorrente introdotto da Dijkstra. Cinque filosofi siedono attorno a un tavolo rotondo, ognuno con un piatto di spaghetti e una forchetta tra ogni coppia di piatti. Per mangiare servono due forchette: quella a sinistra e quella a destra. I filosofi alternano due stati: pensare e mangiare.
 
-Vincoli principali:
+<h2>Vincoli principali</h2>
 
 Un filosofo può mangiare solo se ha entrambe le forchette.
 
