@@ -22,3 +22,18 @@ Livelock: i filosofi continuano a cambiare stato senza mai mangiare.
 ```bash
 make
 ```
+<h2>UTILIZZO</h2>
+
+```bash
+./philo number_of_philosophers time_to_die time_to_eat time_to_sleep [meals_required]
+```
+
+| Nome parametro               | Tipo | Descrizione                                                     |
+| ---------------------------- | ---- | --------------------------------------------------------------- |
+| `number_of_philosophers`     | int  | Numero di filosofi attorno al tavolo                            |
+| `time_to_die`                | int  | Tempo massimo (in millisecondi) senza mangiare prima di morire  |
+| `time_to_eat`                | int  | Tempo impiegato per mangiare (in millisecondi)                  |
+| `time_to_sleep`              | int  | Tempo dedicato al sonno dopo il pasto (in millisecondi)         |
+| `meals_required` (opzionale) | int  | Numero di pasti da consumare prima di concludere la simulazione |
+
+---
