@@ -36,4 +36,13 @@ make
 | `time_to_sleep`              | int  | Tempo dedicato al sonno dopo il pasto (in millisecondi)         |
 | `meals_required` (opzionale) | int  | Numero di pasti da consumare prima di concludere la simulazione |
 
----
+Esempio
+```bash
+./philo 5 800 200 200
+```
+Crea 5 filosofi con 800ms di tolleranza prima della morte, 200ms per mangiare, 200ms per dormire.
+
+```bash
+./philo 5 800 200 200 3
+```
+
