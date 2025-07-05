@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:33:06 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 14:44:48 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 19:07:22 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,21 +14,21 @@
 
 /*
 ** Checks whether the parsed arguments in the data struct are valid.
-** 1. is_valid_philos:
+** is_valid_philos:
 **    - Fails if the number of philosophers is less than 1.
 **    - Prints an error and returns 1 if invalid.
-** 2. is_valid_time:
+** is_valid_time:
 **    - Fails if any time values (die, eat, sleep) are ≤ 0.
-** 3. is_valid_meals:
+** is_valid_meals:
 **    - Fails if meals_required is present but ≤ 0.
 **    - Only checked if ac == 6.
-** 4. If any value is invalid, prints an error and returns 1.
+** If any value is invalid, prints an error and returns 1.
 */
-int	validate_arguments(int ac, t_data *data)
+static int	validate_arguments(int ac, t_data *data)
 {
 	if (is_valid_philos(data->num_philos))
 	{
-		printf("Error: philos must be at least 1\n");
+		printf(COLOR_RED "Error: philos must be at least 1" COLOR_RESET "\n");
 		return (1);
 	}
 	if (is_valid_time(data->time_to_die)
@@ -36,7 +36,11 @@ int	validate_arguments(int ac, t_data *data)
 		|| is_valid_time(data->time_to_sleep) || is_valid_meals(ac,
 			data->meals_required))
 	{
-		printf("Error: invalid argument values\n");
+		printf(COLOR_RED "Error: invalid argument values" COLOR_RESET "\n");
+		printf(COLOR_GREEN "Example: ./philo  num_philos  die  eat  sleep"
+			COLOR_RESET "\n");
+		printf(COLOR_GREEN "         ./philo      4       410  200  200"
+			COLOR_RESET "\n");
 		return (1);
 	}
 	return (0);
@@ -45,16 +49,8 @@ int	validate_arguments(int ac, t_data *data)
 /*
 ** Parses and validates the command-line arguments. This function fills
 ** the 'data' structure with the input values if they are valid.
-**
-** Step-by-step:
 ** 1. is_error: Checks if the number or format of arguments is incorrect.
-**    Returns 1 immediately if any error is found.
 ** 2. ft_atoi: Converts argument strings to integers:
-**    - av[1] -> number of philosophers
-**    - av[2] -> time to die (ms)
-**    - av[3] -> time to eat (ms)
-**    - av[4] -> time to sleep (ms)
-**    - av[5] -> (optional) number of meals each philosopher must eat
 ** 3. If av[5] is not provided, sets meals_required to -1 (infinite).
 ** 4. Sets someone_died flag to 0 as default.
 ** 5. Validates that all time and meal values are positive using:

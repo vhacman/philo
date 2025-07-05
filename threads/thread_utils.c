@@ -3,25 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   thread_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:15:19 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 12:30:37 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 19:11:07 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Creates a thread for each philosopher
+** Creates the monitor thread for the simulation
 ** @data: Pointer to the simulation data structure
-**
+*/
+int	create_monitor_thread(t_data *data)
+{
+	if (pthread_create(&data->monitor, NULL, monitor, data) != 0)
+		return (cleanup_simulation(data), 1);
+	return (0);
+}
+
+/*
+** Creates a thread for each philosopher
 ** Sets the start_time of the simulation and assigns this time as the
 ** initial last_meal_time for each philosopher.
 ** Calls pthread_create to launch the philo_routine for each philosopher.
-** If thread creation fails, prints an error and returns 1.
-**
-** Return: 0 on success, 1 on failure
 */
 int	create_threads(t_data *data)
 {
@@ -34,10 +40,7 @@ int	create_threads(t_data *data)
 		data->philos[i].last_meal_time = data->start_time;
 		if (pthread_create(&data->philos[i].thread, NULL, philo_routine,
 				&data->philos[i]) != 0)
-		{
-			printf("Error: thread creation failed\n");
 			return (1);
-		}
 		i++;
 	}
 	return (0);
@@ -45,11 +48,8 @@ int	create_threads(t_data *data)
 
 /*
 ** Joins all philosopher threads
-** @data: Pointer to the simulation data structure
-**
 ** Waits for each philosopher thread to finish using pthread_join().
 ** Ensures proper thread cleanup at the end of the simulation.
-**
 ** Return: Always returns 0
 */
 int	join_threads(t_data *data)
@@ -58,9 +58,6 @@ int	join_threads(t_data *data)
 
 	i = 0;
 	while (i < data->num_philos)
-	{
-		pthread_join(data->philos[i].thread, NULL);
-		i++;
-	}
+		pthread_join(data->philos[i++].thread, NULL);
 	return (0);
 }

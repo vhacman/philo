@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   initialization.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:58:01 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/04 14:46:10 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 19:06:28 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,11 @@
 
 /*
 ** Initializes the simulation state and status mutex
-** @data: pointer to simulation data structure
-**
 ** Sets initial values for simulation flags and initializes
 ** the status mutex for thread-safe status updates.
-**
 ** Return: 0 on success, cleanup stage number on failure
 */
-int	initialize_simulation_state(t_data *data)
+static int	initialize_simulation_state(t_data *data)
 {
 	data->someone_died = 0;
 	data->all_ate = 0;
@@ -31,14 +28,10 @@ int	initialize_simulation_state(t_data *data)
 }
 
 /*
-** Allocates memory for philosophers array
-** @data: pointer to simulation data structure
-**
 ** Allocates memory for the philosophers array based on num_philos.
-**
 ** Return: 0 on success, cleanup stage number on failure
 */
-int	allocate_philosophers(t_data *data)
+static int	allocate_philosophers(t_data *data)
 {
 	data->philos = malloc(sizeof(t_philo) * data->num_philos);
 	if (!data->philos)
@@ -47,18 +40,19 @@ int	allocate_philosophers(t_data *data)
 }
 
 /*
-** Initializes philosopher-specific data
-** @data: Pointer to the simulation data structure
+** Initializes the internal state of each philosopher in the simulation.
 **
-** For each philosopher:
-** - Assigns a unique ID starting from 1
-** - Initializes meals_eaten and last_meal_time to 0
-** - Assigns left and right fork pointers (circular arrangement)
-** - Stores a pointer to the shared data structure
-**
-** Return: Always returns 0 (no error handling needed here)
+** For each philosopher (from index 0 to num_philos - 1):
+** - Sets a unique ID (starting from 1).
+** - Initializes meals_eaten to 0 (no meals consumed yet).
+** - Sets last_meal_time to 0.
+** - Assigns left_fork to forks[i].
+** - Assigns right_fork to forks[(i + 1) % num_philos] to ensure circular
+**   fork sharing (the last philosopher wraps around to forks[0]).
+** - Stores a pointer to the shared t_data structure for global access.
+** Return: Always returns 0 (no failure conditions expected here).
 */
-int	initialize_data(t_data *data)
+static int	initialize_data(t_data *data)
 {
 	int	i;
 
@@ -78,15 +72,12 @@ int	initialize_data(t_data *data)
 
 /*
 ** Initializes the complete simulation
-** @data: pointer to simulation data structure
-**
 ** Performs all initialization steps in order:
 ** 1. Initialize mutexes
 ** 2. Initialize forks
 ** 3. Initialize simulation state
 ** 4. Allocate philosophers array
 ** 5. Initialize data structures
-**
 ** Return: 0 on success, cleanup stage number on failure
 */
 int	init_simulation(t_data *data)

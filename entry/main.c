@@ -3,58 +3,86 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:57:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 12:26:35 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 15:32:52 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Entry point of the program. It parses the command-line
-** arguments and initializes all simulation data. If parsing,
-** initialization, or thread creation fails, it performs cleanup
-** and exits with error code 1. Otherwise, it launches a monitor
-** thread to track simulation completion or philosopher death,
-** joins all threads, and finally frees resources.
+** Parses input arguments and initializes the simulation.
+** Step-by-step:
+** 1. parse_args: parses and validates arguments.
+** 2. init_simulation: allocates memory and initializes data,
+**    mutexes, and philosopher structures.
+** 3. If anything fails, calls cleanup_simulation to free memory.
+** Returns 0 on success, 1 on failure.
+*/
+int	setup_simulation(t_data *data, int ac, char **av)
+{
+	if (parse_args(ac, av, data) != 0)
+		return (1);
+	if (init_simulation(data) != 0)
+	{
+		cleanup_simulation(data);
+		return (1);
+	}
+	return (0);
+}
+
+/*
+** Starts the simulation by creating philosopher threads and the monitor.
+** 1. create_threads: starts a thread for each philosopher.
+** 2. create_monitor_thread: starts the thread that checks for death.
+** 3. If any thread creation fails, cleans up and returns 1.
+** Returns 0 on success, 1 on failure.
+*/
+int	run_simulation(t_data *data)
+{
+	if (create_threads(data) != 0)
+	{
+		cleanup_simulation(data);
+		return (1);
+	}
+	if (create_monitor_thread(data) != 0)
+	{
+		cleanup_simulation(data);
+		return (1);
+	}
+	return (0);
+}
+
+/*
+** Final step of the program. Waits for all threads to finish and frees memory.
+** 1. Waits for the monitor thread to finish with pthread_join.
+** 2. Calls join_threads to wait for all philosopher threads.
+** 3. Frees all allocated resources and destroys mutexes.
+** Returns 0 always (simulation ends here).
+*/
+int	finalize_simulation(t_data *data)
+{
+	pthread_join(data->monitor, NULL);
+	join_threads(data);
+	cleanup_simulation(data);
+	return (0);
+}
+
+/*
+** Entry point of the program. It manages the full simulation flow.
 **
-** Steps:
-** 1. parse_args: Parses and validates arguments, fills the data struct.
-** 2. init_simulation: Sets up mutexes and simulation structures.
-** 3. create_threads: Starts a thread per philosopher.
-** 4. pthread_create (monitor): Spawns a thread to monitor simulation.
-** 5. pthread_join: Waits for monitor thread to finish.
-** 6. join_threads: Waits for all philosopher threads to terminate.
-** 7. cleanup_simulation: Destroys mutexes and frees all memory.
-**
-** Returns 0 on success, 1 on any failure during setup or thread creation.
+** Returns 0 on success, 1 on error.
 */
 int	main(int ac, char **av)
 {
 	t_data	data;
 
-	if (parse_args(ac, av, &data) != 0)
+	if (setup_simulation(&data, ac, av) != 0)
 		return (1);
-	if (init_simulation(&data) != 0)
-	{
-		cleanup_simulation(&data);
+	if (run_simulation(&data) != 0)
 		return (1);
-	}
-	if (create_threads(&data) != 0)
-	{
-		cleanup_simulation(&data);
-		return (1);
-	}
-	if (pthread_create(&data.monitor, NULL, monitor, &data) != 0)
-	{
-		printf("Error: monitor thread creation failed\n");
-		cleanup_simulation(&data);
-		return (1);
-	}
-	pthread_join(data.monitor, NULL);
-	join_threads(&data);
-	cleanup_simulation(&data);
+	finalize_simulation(&data);
 	return (0);
 }

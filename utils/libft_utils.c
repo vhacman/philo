@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   libft_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 11:37:37 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/03 12:18:58 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 15:37:20 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,10 @@
 
 /*
 ** Compares two strings lexicographically
-** @s1: First string to compare
-** @s2: Second string to compare
-**
-** This function compares two null-terminated strings character by character.
-** It continues until it finds different characters or reaches the end of
-** either string. Returns the difference between the first differing
-** characters as unsigned chars.
-**
-** Return: 0 if strings are equal, negative if s1 < s2, positive if s1 > s2
+** s1: First string to compare
+** s2: Second string to compare
+** Return: 0 if strings are equal,
+** negative if s1 < s2, positive if s1 > s2
 */
 int	ft_strcmp(const char *s1, const char *s2)
 {
@@ -36,15 +31,9 @@ int	ft_strcmp(const char *s1, const char *s2)
 
 /*
 ** Compares at most n characters of two strings
-** @s1: First string to compare
-** @s2: Second string to compare
-** @n: Maximum number of characters to compare
-**
-** This function compares up to n characters of two strings.
-** If n is 0, it returns 0 immediately (no comparison needed).
-** It stops comparing when it reaches n-1 characters, finds different
-** characters, or reaches the end of either string.
-**
+** s1: First string to compare
+** s2: Second string to compare
+** n: Maximum number of characters to compare
 ** Return: 0 if strings are equal within n chars, negative if s1 < s2,
 **         positive if s1 > s2
 */
@@ -64,11 +53,7 @@ int	ft_strncmp(const char *s1, const char *s2, size_t n)
 
 /*
 ** Checks if a character is a decimal digit
-** @c: Character to check (passed as int but treated as char)
-**
-** This function determines if the given character is a decimal digit.
-** It performs a simple range check using ASCII values.
-**
+** determines if the given character is a decimal digit.
 ** Return: 1 if c is a digit, 0 otherwise
 */
 int	ft_isdigit(int c)
@@ -80,13 +65,9 @@ int	ft_isdigit(int c)
 
 /*
 ** Converts a string to an integer
-** @str: String to convert
-**
-** This function converts the initial portion of a string to an integer.
-** It skips leading whitespace characters (space, tab, newline, etc.),
-** handles an optional sign (+ or -), then converts consecutive digits.
-** The conversion stops at the first non-digit character.
-**
+** It skips leading whitespace characters,
+** handles an optional sign (+ or -),
+** then converts consecutive digits.
 ** Return: The converted integer value
 */
 int	ft_atoi(const char *str)
@@ -115,14 +96,10 @@ int	ft_atoi(const char *str)
 }
 
 /*
-** Checks whether a given string represents a valid non-negative integer.
-** The string must contain only digit characters (0–9) and must not be empty.
-**
-** Step-by-step:
-** 1. Returns 0 if the string is empty.
-** 2. Iterates through each character of the string.
-** 3. If any character is not a digit (ft_isdigit returns 0), returns 0.
-** 4. If all characters are digits, returns 1.
+** Checks whether a given string represents
+** a valid non-negative integer.
+** The string must contain only digit characters (0–9)
+** and must not be empty.
 */
 int	is_number(char *str)
 {

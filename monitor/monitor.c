@@ -3,27 +3,25 @@
 /*                                                        :::      ::::::::   */
 /*   monitor.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:40:35 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/02 09:50:07 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 16:43:16 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Monitors the simulation for death or completion
-** @philo: Pointer to the shared simulation data (cast to t_data*)
-**
-** Repeatedly checks if:
-** - Any philosopher has died (check_philo_death)
-** - All philosophers have finished eating (check_all_meals_done)
-**
-** If a philosopher dies or all meals are done, exits the loop and returns.
-** Sleeps briefly (100 microseconds) between checks to reduce CPU usage.
-**
-** Return: NULL (used as a thread routine)
+** Monitors the simulation to detect philosopher death or completion.
+** Enters a loop that runs while no philosopher has died.
+** If all meals are done, exits the monitor.
+** Iterates over all philosophers:
+** -Checks if any philosopher has died.
+** -If so, exits immediately.
+**  Sleeps briefly (100 µs) to reduce CPU usage.
+** Ensures simulation ends when a philosopher dies or all are done.
+** Returns: NULL when the monitor exits.
 */
 void	*monitor(void *philo)
 {

@@ -6,28 +6,20 @@
 /*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 17:01:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/05 15:06:39 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 15:55:47 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Initializes the state of a philosopher before starting the routine.
-** It checks if the philosopher is even, calculates a base delay, and
-** applies a small initial wait if it's safe to do so.
+** Initializes a philosopher before starting the routine.
 **
-**  Stores time_to_eat and time_to_die from simulation data.
-**  Calculates how long it's been since the last meal.
-**  Calculates base_delay using calculate_initial_delay().
-**  If the philosopher is even, and there's enough time before death,
-**  sleeps for half of time_to_eat to avoid all philosophers acting
-**  at the same time.
-**
-** Arguments:
-** - philo: pointer to the philosopher structure
-** - is_even: output flag, 1 if the philosopher ID is even
-** - base_delay: output value, used to delay eating during the cycle
+** - Sets is_even if the philosopher ID is even.
+** - Stores time_to_eat and time_to_die from simulation data.
+** - Calculates time since last meal.
+** - Calculates base_delay with calculate_initial_delay().
+** - If even and safe, sleeps for half of time_to_eat to avoid sync.
 */
 static void	init_philosopher_state(t_philo *philo, int	*is_even,
 									int *base_delay)
@@ -47,16 +39,13 @@ static void	init_philosopher_state(t_philo *philo, int	*is_even,
 }
 
 /*
-** Adds a small delay for even philosophers before they eat.
-** This helps reduce fork contention by spacing out thread actions.
+** Adds a delay for even philosophers to reduce fork contention.
 **
-** 1. If base_delay is 0 or negative, returns immediately.
-** 2. Calculates how much time is left before the philosopher dies.
-** 3. If there is enough time left, sleeps for base_delay milliseconds
-**    using precise_usleep.
-** This avoids situations where a philosopher would die during the delay.
-**
-** Arguments:
+** 1. Returns immediately if base_delay is 0 or negative.
+** 2. Calculates time left before the philosopher would die.
+** 3. If safe, sleeps for base_delay using precise_usleep.
+** Prevents death during delay by checking remaining time.
+** Args:
 ** - philo: pointer to the philosopher
 ** - base_delay: delay to apply (in milliseconds)
 */
@@ -76,23 +65,18 @@ static void	apply_even_philo_delay(t_philo *philo, int base_delay)
 }
 
 /*
-** Executes one full cycle for a philosopher: wait (if even),
-** eat, check if finished, sleep and think.
-**
-** 1. If the philosopher is even, applies a delay to avoid
-**    collisions with other threads (fork contention).
-** 2. If someone has died, exits early.
-** 3. philo_eat: tries to eat and updates meals.
-** 4. If someone died during eating, exits.
-** 5. Checks if the philosopher has completed all meals.
-**    If yes, exits.
-** 6. philo_sleep_and_think: sleeps and prints status.
-**
-** Arguments:
-** - philo: pointer to the philosopher structure
-** - is_even: 1 if the philosopher ID is even
-** - base_delay: delay to apply if philosopher is even
-** Returns 1 if the philosopher must stop, 0 to continue looping.
+** Executes one full cycle: optional delay, eat, check, sleep, think.
+** 1. Applies delay if philosopher is even (to avoid fork collisions).
+** 2. Exits early if someone has died.
+** 3. Calls philo_eat and updates meal count.
+** 4. Exits if someone died during eating.
+** 5. Exits if the philosopher completed all meals.
+** 6. Calls philo_sleep_and_think to sleep and print status.
+** Args:
+** - philo: pointer to philosopher struct
+** - is_even: 1 if philosopher ID is even
+** - base_delay: delay to apply for even philosophers
+** Returns 1 to stop, 0 to continue.
 */
 static int	execute_cycle(t_philo *philo, int is_even, int base_delay)
 {
@@ -110,16 +94,13 @@ static int	execute_cycle(t_philo *philo, int is_even, int base_delay)
 }
 
 /*
-** Main routine run by each philosopher thread.
-** Controls the philosopher's behavior during the simulation.
-** 1. Converts the argument to a t_philo pointer.
-** 2. Calls init_philosopher_state to:
-**    - Check if the philosopher is even
-**    - Calculate the delay to apply before eating
-** 3. Enters a loop that continues until:
-**    - A philosopher dies (check_if_is_dead)
-**    - Or the current philosopher finishes (via execute_cycle)
-** 4. In each loop, execute_cycle performs one full cycle.
+** Main function run by each philosopher thread.
+** 1. Initializes philosopher state.
+** 2. Applies a delay if the philosopher ID is even.
+** 3. Loops until:
+**    - A philosopher has died, or
+**    - This philosopher has finished.
+** 4. Calls execute_cycle in each loop.
 ** Returns NULL when the thread ends.
 */
 void	*philo_routine(void *philo_arg)

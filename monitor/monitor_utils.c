@@ -3,72 +3,60 @@
 /*                                                        :::      ::::::::   */
 /*   monitor_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:29:30 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/02 11:43:08 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 18:33:10 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Checks if a specific philosopher has eaten the required number of meals.
-** This check is only performed if 'meals_required' > 0 (i.e., the optional
-** argument was provided). The value is protected by a mutex to avoid race
-** conditions during concurrent access.
+** Checks if a philosopher has eaten all the required meals.
 **
-** Step-by-step:
-** 1. If no meal limit is set (meals_required <= 0), returns 0 immediately.
-** 2. Locks meal_lock to safely access shared meals_eaten data.
-** 3. Compares the meals eaten by the philosopher at index 'philo_idx'
-**    to the meals_required threshold.
-** 4. Unlocks the mutex and returns 1 if completed, 0 otherwise.
-**
-** Arguments:
-** - data: pointer to the main simulation data
-** - philo_idx: index of the philosopher in the data->philos array
-**
-** Returns 1 if the philosopher has finished all meals, 0 otherwise.
+** How it works:
+** 1. If meals_required is not set (≤ 0), returns 0 immediately.
+** 2. Locks meal_lock to safely read meals_eaten.
+** 3. Compares meals_eaten with meals_required.
+** 4. Unlocks the mutex and returns 1 if the philosopher is done,
+**    or 0 otherwise.
 */
 int	has_completed_meals(t_data *data, int philo_idx)
 {
-	int	already_done;
+	int	meals_eaten;
 
 	if (data->meals_required <= 0)
 		return (0);
 	pthread_mutex_lock(&data->meal_lock);
-	already_done = (data->meals_required > 0
-			&& data->philos[philo_idx].meals_eaten >= data->meals_required);
+	meals_eaten = data->philos[philo_idx].meals_eaten;
 	pthread_mutex_unlock(&data->meal_lock);
-	return (already_done);
+	return (meals_eaten >= data->meals_required);
 }
 
 /*
-** Checks if a philosopher has died
-** @data: Pointer to the simulation data structure
-** @philo_idx: Index of the philosopher to check
-**
-** Skips the check if the philosopher has already eaten the required meals.
-** Calculates the time since the last meal.
-** If this time exceeds time_to_die and no death has been flagged yet,
-** sets the death flag and prints that the philosopher died.
-**
-** Return: 1 if the philosopher died, 0 otherwise
+** Checks if the given philosopher has died due to starvation.
+** 1. If the philosopher has already completed all required meals,
+**    skips the check and returns 0.
+** 2. Locks meal_lock to safely read last_meal_time.
+** 3. Calculates time since the last meal.
+** 4. If that time exceeds time_to_die:
+**    - Checks if death was already detected.
+**    - If not, sets the death flag and prints "died" message.
+**    - Returns 1 to indicate this philosopher has died.
+** 5. Otherwise, returns 0.
 */
 int	check_philo_death(t_data *data, int philo_idx)
 {
-	long	current_time;
-	long	time_of_last_meal;
+	long	last_meal_time;
 	long	time_since_last_meal;
 
 	if (has_completed_meals(data, philo_idx))
 		return (0);
-	current_time = get_time();
 	pthread_mutex_lock(&data->meal_lock);
-	time_of_last_meal = data->philos[philo_idx].last_meal_time;
+	last_meal_time = data->philos[philo_idx].last_meal_time;
 	pthread_mutex_unlock(&data->meal_lock);
-	time_since_last_meal = current_time - time_of_last_meal;
+	time_since_last_meal = get_time() - last_meal_time;
 	if (time_since_last_meal > data->time_to_die)
 	{
 		if (!check_if_is_dead(data))
@@ -82,34 +70,54 @@ int	check_philo_death(t_data *data, int philo_idx)
 }
 
 /*
-** Checks if all philosophers have finished eating
-** @data: Pointer to the simulation data structure
-**
-** Only active if meals_required > 0.
-** Iterates through all philosophers and counts how many have reached
-** the required number of meals. Uses a mutex to read meals_eaten safely.
-** If all philosophers are done eating, sets all_ate to 1.
-**
-** Return: 1 if all meals are done, 0 otherwise
+** Counts how many philosophers have eaten at least the required
+** number of meals.
+** - Loops from index curr_ph to the end of the philosophers array.
+** - For each philosopher:
+**   - Locks meal_lock to safely read meals_eaten.
+**   - If meals_eaten ≥ m_required, increments the counter.
+**   - Unlocks the mutex.
+*/
+static int	done_eating(t_data *data, int m_required, int curr_ph)
+{
+	int	done_eating;
+	int	n_philo;
+	int	meals_eaten;
+
+	done_eating = 0;
+	n_philo = data->num_philos;
+	while (curr_ph < n_philo)
+	{
+		pthread_mutex_lock(&data->meal_lock);
+		meals_eaten = data->philos[curr_ph].meals_eaten;
+		if (meals_eaten >= m_required)
+			done_eating++;
+		pthread_mutex_unlock(&data->meal_lock);
+		curr_ph++;
+	}
+	return (done_eating);
+}
+
+/*
+** Checks if all philosophers have finished the required number of meals.
+** 1. If meals_required is not set (≤ 0), returns 0 immediately.
+** 2. Calls done_eating to count how many philosophers have eaten enough.
+** 3. If all philosophers are done:
+**    - Sets the all_ate flag to 1 (protected by status_lock).
+**    - Returns 1 to signal that the simulation can end.
 */
 int	check_all_meals_done(t_data *data)
 {
-	int	curr_philo_index;
-	int	done_eating;
+	int	ph_done_eating;
+	int	m_required;
+	int	n_philo;
 
-	if (data->meals_required <= 0)
+	n_philo = data->num_philos;
+	m_required = data->meals_required;
+	ph_done_eating = done_eating(data, m_required, 0);
+	if (m_required <= 0)
 		return (0);
-	done_eating = 0;
-	curr_philo_index = 0;
-	while (curr_philo_index < data->num_philos)
-	{
-		pthread_mutex_lock(&data->meal_lock);
-		if (data->philos[curr_philo_index].meals_eaten >= data->meals_required)
-			done_eating++;
-		pthread_mutex_unlock(&data->meal_lock);
-		curr_philo_index++;
-	}
-	if (done_eating == data->num_philos)
+	if (ph_done_eating == n_philo)
 	{
 		pthread_mutex_lock(&data->status_lock);
 		data->all_ate = 1;

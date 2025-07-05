@@ -6,7 +6,7 @@
 /*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 11:45:32 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/05 14:44:35 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 19:08:17 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 ** - meals_eaten: incremented by 1
 ** Unlocks the mutex after updating.
 */
-void	update_meal_time(t_philo *philo)
+static void	update_meal_time(t_philo *philo)
 {
 	pthread_mutex_lock(&philo->data->meal_lock);
 	philo->last_meal_time = get_time();

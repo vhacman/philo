@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   death_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:10:57 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/02 09:48:19 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 17:13:36 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,6 @@
 
 /*
 ** Sets the death flag to signal simulation stop
-** @data: Pointer to the simulation data structure
-**
 ** Locks the death_lock mutex, sets someone_died to 1,
 ** then unlocks the mutex. This flag is used to stop all threads.
 */
@@ -28,8 +26,6 @@ void	set_death(t_data *data)
 
 /*
 ** Checks if any philosopher has died
-** @data: Pointer to the simulation data structure
-**
 ** Locks the death_lock mutex to safely read someone_died.
 ** Returns 1 if a death was detected, 0 otherwise.
 */

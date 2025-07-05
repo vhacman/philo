@@ -6,28 +6,23 @@
 /*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:03:39 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/05 14:43:37 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/05 18:32:58 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
 /*
-** Calculates how long even-numbered philosophers should wait before
-** trying to eat. This delay helps avoid deadlocks and reduces fork
-** contention at the start of the simulation.
+** Computes a safe delay for even-numbered philosophers to reduce
+** fork contention at the start of the simulation.
 **
-** How it works:
-** 1. Calculates the maximum safe delay based on:
-**    time_to_die - time_to_eat - time_to_sleep
-** 2. Uses half of time_to_eat as the base delay.
-** 3. If the safe delay is too small (≤ 0), sets base delay to 0.
-** 4. If base delay is too large, caps it to the safe limit.
-**
-** Arguments:
-** - data: pointer to the simulation data structure
-**
-** Returns a safe delay in milliseconds.
+** Step-by-step:
+** 1. Calculates the maximum safe delay:
+**    time_to_die - time_to_eat - time_to_sleep.
+** 2. Sets the base delay as half of time_to_eat.
+** 3. If the safe delay is zero or negative, sets delay to 0.
+** 4. If the base delay is too large, turns it to the safe limit.
+** - Delay in milliseconds that avoids philosopher death.
 */
 long	calculate_initial_delay(t_data *data)
 {
@@ -49,7 +44,6 @@ long	calculate_initial_delay(t_data *data)
 **
 ** Uses gettimeofday() to retrieve the current time.
 ** Converts the result from seconds and microseconds to milliseconds.
-**
 ** Return: Current time in milliseconds as a long integer
 */
 long	get_time(void)
@@ -61,69 +55,54 @@ long	get_time(void)
 }
 
 /*
-** Limits the sleep time so that the philosopher doesn't die
-** while sleeping too long.
+** Adjusts the sleep time to avoid philosopher death during sleep.
+** - If 'philo' is NULL, does nothing.
+** - Calculates how much time is left before the philosopher dies
+**   based on time_to_die and last_meal_time.
+** - If there’s no time left, exits immediately.
+** - If the requested sleep time is too long, reduces it to avoid
+**   sleeping past the death limit.
 **
-** How it works:
-** - If 'philo' is given (not NULL), it checks how much time is
-**   left before that philosopher would die.
-** - If the philosopher has no time left, it returns immediately.
-** - If the sleep time is longer than the time left to live,
-**   it reduces the sleep time to match the safe limit.
-**
-** This is useful to avoid situations where a philosopher
-** dies during a long sleep.
-**
-** Arguments:
-** - m_seconds_to_wait: pointer to the time to sleep (in ms)
-** - data: simulation state (contains time_to_die)
-** - philo: the philosopher (can be NULL)
+** Args:
+** - wait_time: pointer to the sleep duration (in ms)
+** - data: pointer to simulation data
+** - philo: pointer to the current philosopher
 */
-static void	precise_usleep_utils(long *m_seconds_to_wait, t_data *data,
+static void	limit_sleep_time(long *wait_time, t_data *data,
 								t_philo *philo)
 {
 	long	time_to_die;
 	long	start_time;
 
-	if (philo != NULL)
-	{
-		start_time = get_time();
-		time_to_die = data->time_to_die
-			- (start_time - philo->last_meal_time);
-		if (time_to_die <= 0)
-			return ;
-		if (*m_seconds_to_wait > time_to_die)
-			*m_seconds_to_wait = time_to_die;
-	}
+	if (philo == NULL)
+		return ;
+	start_time = get_time();
+	time_to_die = data->time_to_die
+		- (start_time - philo->last_meal_time);
+	if (time_to_die <= 0)
+		return ;
+	if (*wait_time > time_to_die)
+		*wait_time = time_to_die;
 }
 
 /*
-** Sleeps for a specific amount of time in milliseconds, but in a safe way:
-** it checks regularly if someone died, and avoids sleeping too long
-** if the philosopher is close to dying.
+** Sleeps for an accurate duration, with safety checks to avoid death.
 **
-** How it works:
-** 1. Gets the current time at the start.
-** 2. Calls precise_usleep_utils to reduce the sleep time if the
-**    philosopher could die soon.
+** 1. Gets the current time as start_time.
+** 2. Calls limit_sleep_time to adjust wait_time if needed.
 ** 3. Enters a loop:
-**    - If someone died, exits immediately.
-**    - Checks how much time has passed since the start.
-**    - If enough time passed, stops sleeping.
-**    - Otherwise, waits a short time based on how much is left:
-**        > 20ms → sleep (remaining - 10) ms
-**        > 5ms  → sleep 1 ms
-**        ≤ 5ms  → sleep 100 µs
+**    - Exits immediately if a philosopher has died.
+**    - Calculates elapsed time since start.
+**    - If elapsed >= wait_time, exits the loop.
+**    - Otherwise, computes remaining time and sleeps:
+**        • If > 20 ms left, sleeps for (remaining - 10) ms.
+**        • If > 5 ms left, sleeps for 1 ms.
+**        • Else, sleeps for 100 µs.
 **
-** This gives a very accurate sleep without blocking the program,
-** and avoids killing philosophers during long waits.
-**
-** Arguments:
-** - m_seconds_to_wait: how long to sleep (in ms)
-** - data: simulation state (used to check if someone died)
-** - philo: current philosopher (used to calculate safe delay)
+** Ensures the philosopher wakes up as close as possible to wait_time
+** without sleeping too long and risking death.
 */
-void	precise_usleep(long m_seconds_to_wait, t_data *data, t_philo *philo)
+void	precise_usleep(long wait_time, t_data *data, t_philo *philo)
 {
 	long	start_time;
 	long	current_time;
@@ -131,16 +110,16 @@ void	precise_usleep(long m_seconds_to_wait, t_data *data, t_philo *philo)
 	long	remaining;
 
 	start_time = get_time();
-	precise_usleep_utils(&m_seconds_to_wait, data, philo);
+	limit_sleep_time(&wait_time, data, philo);
 	while (1)
 	{
 		if (check_if_is_dead(data))
 			return ;
 		current_time = get_time();
 		elapsed = current_time - start_time;
-		if (elapsed >= m_seconds_to_wait)
+		if (elapsed >= wait_time)
 			break ;
-		remaining = m_seconds_to_wait - elapsed;
+		remaining = wait_time - elapsed;
 		if (remaining > 20)
 			usleep((remaining - 10) * 1000);
 		else if (remaining > 5)
