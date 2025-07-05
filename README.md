@@ -1,5 +1,6 @@
 <h1>PHILOSOPERS</h1>
 
+![Score](https://img.shields.io/badge/Score-100/100-brightgreen?style=for-the-badge)
 [![42 Project](https://img.shields.io/badge/42%20Project-Philo-blue?style=for-the-badge&logo=42)](https://github.com/vhacman/philo)
 [![C Language](https://img.shields.io/badge/Made%20with-C-00599C?style=for-the-badge&logo=c)](https://en.wikipedia.org/wiki/C_(programming_language))
 [![Norminette Approved](https://img.shields.io/badge/42%20Norminette-OK-brightgreen?style=for-the-badge)](https://github.com/42School/norminette)
