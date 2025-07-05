@@ -206,7 +206,7 @@ Show Image
 <h2>  🎥 Video Demo </h2>
 
 Guarda il progetto in azione!
-<video src="video.mp4" width="200">
+![Philosophers](philo.gif)
 - Compilazione del progetto
 - Esempi di esecuzione con diversi parametri
 - Comportamento della simulazione in tempo reale
