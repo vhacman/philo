@@ -13,6 +13,7 @@ Un filosofo può mangiare solo se ha entrambe le forchette.
 Le forchette sono condivise con i vicini.
 Nessun filosofo sa in anticipo cosa faranno gli altri.
 <h2>Problemi:⚠️</h2>
+
 - **Deadlock:** tutti bloccati ad aspettare.
 - **Starvation:** uno o più filosofi non riescono mai a mangiare.
 - **Livelock:** tutti cambiano stato continuamente senza avanzare.
