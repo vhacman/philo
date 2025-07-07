@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   monitor_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:29:30 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/05 18:33:10 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/07 11:55:07 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,35 +35,29 @@ int	has_completed_meals(t_data *data, int philo_idx)
 }
 
 /*
-** Checks if the given philosopher has died due to starvation.
+** Checks if the specified philosopher has died of starvation.
 ** 1. If the philosopher has already completed all required meals,
-**    skips the check and returns 0.
-** 2. Locks meal_lock to safely read last_meal_time.
-** 3. Calculates time since the last meal.
-** 4. If that time exceeds time_to_die:
-**    - Checks if death was already detected.
-**    - If not, sets the death flag and prints "died" message.
-**    - Returns 1 to indicate this philosopher has died.
-** 5. Otherwise, returns 0.
-*/
+**    or if a death has already been detected globally, return 0.
+** 2. Lock the meal mutex to read the philosopher's last_meal_time.
+** 3. Calculate how much time has passed since their last meal.
+** 4. If the elapsed time exceeds time_to_die:
+**    - Mark global death flag using set_death.
+**    - Print "died" message with timestamp.
+**    - Return 1 to indicate death.
+** 5. If the philosopher is still alive, return 0.*/
 int	check_philo_death(t_data *data, int philo_idx)
 {
-	long	last_meal_time;
 	long	time_since_last_meal;
 
-	if (has_completed_meals(data, philo_idx))
+	if (has_completed_meals(data, philo_idx) || check_if_is_dead(data))
 		return (0);
 	pthread_mutex_lock(&data->meal_lock);
-	last_meal_time = data->philos[philo_idx].last_meal_time;
+	time_since_last_meal = get_time() - data->philos[philo_idx].last_meal_time;
 	pthread_mutex_unlock(&data->meal_lock);
-	time_since_last_meal = get_time() - last_meal_time;
 	if (time_since_last_meal > data->time_to_die)
 	{
-		if (!check_if_is_dead(data))
-		{
-			set_death(data);
-			print_philo_status(&data->philos[philo_idx], "died");
-		}
+		set_death(data);
+		print_philo_status(&data->philos[philo_idx], "died");
 		return (1);
 	}
 	return (0);

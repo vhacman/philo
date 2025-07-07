@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/23 15:57:47 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/05 15:32:52 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/07 11:59:15 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 
 /*
 ** Parses input arguments and initializes the simulation.
-** Step-by-step:
 ** 1. parse_args: parses and validates arguments.
 ** 2. init_simulation: allocates memory and initializes data,
 **    mutexes, and philosopher structures.
@@ -70,11 +69,6 @@ int	finalize_simulation(t_data *data)
 	return (0);
 }
 
-/*
-** Entry point of the program. It manages the full simulation flow.
-**
-** Returns 0 on success, 1 on error.
-*/
 int	main(int ac, char **av)
 {
 	t_data	data;

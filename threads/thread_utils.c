@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   thread_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:15:19 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/05 19:11:07 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/07 12:00:24 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ int	create_threads(t_data *data)
 ** Joins all philosopher threads
 ** Waits for each philosopher thread to finish using pthread_join().
 ** Ensures proper thread cleanup at the end of the simulation.
-** Return: Always returns 0
 */
 int	join_threads(t_data *data)
 {

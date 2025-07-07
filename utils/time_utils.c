@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   time_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: vhacman <vhacman@student.42.fr>            +#+  +:+       +#+        */
+/*   By: vhacman <vhacman@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/25 14:03:39 by vhacman           #+#    #+#             */
-/*   Updated: 2025/07/05 18:32:58 by vhacman          ###   ########.fr       */
+/*   Updated: 2025/07/07 11:45:25 by vhacman          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,11 +62,8 @@ long	get_time(void)
 ** - If there’s no time left, exits immediately.
 ** - If the requested sleep time is too long, reduces it to avoid
 **   sleeping past the death limit.
-**
-** Args:
-** - wait_time: pointer to the sleep duration (in ms)
-** - data: pointer to simulation data
-** - philo: pointer to the current philosopher
+**   This prevents a philosopher from entering a sleep longer than the
+**   time they can survive without eating
 */
 static void	limit_sleep_time(long *wait_time, t_data *data,
 								t_philo *philo)
@@ -96,8 +93,7 @@ static void	limit_sleep_time(long *wait_time, t_data *data,
 **    - If elapsed >= wait_time, exits the loop.
 **    - Otherwise, computes remaining time and sleeps:
 **        • If > 20 ms left, sleeps for (remaining - 10) ms.
-**        • If > 5 ms left, sleeps for 1 ms.
-**        • Else, sleeps for 100 µs.
+**        • Else, sleeps for 100 µs. to prevent over usage of CPU. best-practice
 **
 ** Ensures the philosopher wakes up as close as possible to wait_time
 ** without sleeping too long and risking death.
@@ -122,8 +118,6 @@ void	precise_usleep(long wait_time, t_data *data, t_philo *philo)
 		remaining = wait_time - elapsed;
 		if (remaining > 20)
 			usleep((remaining - 10) * 1000);
-		else if (remaining > 5)
-			usleep(1000);
 		else
 			usleep(100);
 	}
